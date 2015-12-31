@@ -1,0 +1,15 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Version
+$ python3 -V
+Python 3.3.2
+
+
+# Run the Guess program TUI (text user-interface)
+$ ./guesstui.py
+
+# ...or run the Guess program TUI and set the maximum range
+$ ./guesstui.py 1023
+
