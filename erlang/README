@@ -42,11 +42,14 @@ $ erl -noshell -run guess main 1023 -s init stop
 ##############################################################################
 # Bookmarks
 ##############################################################################
-http://www.erlang.org/doc/apps/stdlib/index.html
-http://www.erlang.org/doc/man/erl.html
-http://www.erlang.org/doc/man/escript.html
-http://www.erlang.org/doc/man/io.html
-http://www.erlang.org/doc/man/string.html
+- http://www.erlang.org/doc/apps/stdlib/index.html
+- http://www.erlang.org/doc/man/erl.html
+- http://www.erlang.org/doc/man/escript.html
+- http://www.erlang.org/doc/man/io.html
+- http://www.erlang.org/doc/man/string.html
 
-http://www.erlang.org/doc/reference_manual/modules.html
+- http://www.erlang.org/doc/reference_manual/modules.html
+- File app examples, http://www.erlang.org/article/11
+
+- Concise Guide to Erlang, http://www.cis.upenn.edu/~matuszek/General/ConciseGuides/concise-erlang.html
 
