@@ -1,0 +1,5 @@
+root:x:0:0:root:/root:/bin/bash
+qemu:x:107:107:qemu user:/:/sbin/nologin
+laver:x:1000:100::/home/laver:/bin/bash
+newcombe:x:1001:100::/home/newcombe:/bin/bash
+tennis:x:1111:1111::/home/tennis:/bin/bash
