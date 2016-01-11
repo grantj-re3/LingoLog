@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# Usage:  userids.rb [system|user]
+# Usage:  userids.rb [system|normal]
 #
 # With no arguments, this program gives the same output as the command:
 #   $ id USERNAME
@@ -7,7 +7,7 @@
 #   $ sed 's/:.*$//' /etc/passwd |while read uname; do id $uname; done
 #
 # With the argument 'system' only user IDs less than 1000 will be shown.
-# With the argument 'user' only user IDs greater or equal to 1000 will be shown.
+# With the argument 'normal' only user IDs greater or equal to 1000 will be shown.
 ##############################################################################
 class User
   attr_reader :uname, :uid, :gid
@@ -72,8 +72,6 @@ if ARGV.length > 0
 end
 
 # Read and process /etc/passwd and /etc/group files
-users = Users.new
-groups = Groups.new
 users = Users.new("../../etc/userids/etc_passwd")
 groups = Groups.new("../../etc/userids/etc_group")
 

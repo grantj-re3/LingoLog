@@ -1,0 +1,26 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Version
+$ ruby -v
+ruby 2.0.0p353 (2013-11-22 revision 43784) [x86_64-linux]
+
+
+# Run the program
+$ ./userids.rb
+$ ./userids.rb system
+$ ./userids.rb normal
+
+
+If you want to process /etc/passwd and /etc/group instead of the test files,
+replace:
+  users = Users.new("../../etc/userids/etc_passwd")
+  groups = Groups.new("../../etc/userids/etc_group")
+
+with:
+  users = Users.new()
+  groups = Groups.new()
+
+in "function" main().
+

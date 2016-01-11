@@ -1,5 +1,13 @@
 #!/usr/bin/env escript
-% userids.erl
+% Usage:  userids.erl [system|normal]
+%
+% With no arguments, this program gives the same output as the command:
+%   $ id USERNAME
+% for every username listed in /etc/passwd. That is, output is the same as:
+%   $ sed 's/:.*$//' /etc/passwd |while read uname; do id $uname; done
+%
+% With the argument 'system' only user IDs less than 1000 will be shown.
+% With the argument 'normal' only user IDs greater or equal to 1000 will be shown.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -module(userids).
 -export([main/1, main/0, readUsers/1, readUsers/0, readGroups/1, readGroups/0]).
