@@ -13,3 +13,10 @@ $ ./guesstui.py
 # ...or run the Guess program TUI and set the maximum range
 $ ./guesstui.py 1023
 
+##############################################################################
+# Bookmarks
+##############################################################################
+- https://docs.python.org/3.3/index.html
+- https://docs.python.org/3.3/reference/index.html
+- https://docs.python.org/3.3/tutorial/index.html
+
