@@ -1,0 +1,26 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Version
+$ python3 -V
+Python 3.3.2
+
+
+# Run the program
+$ ./userids.py
+$ ./userids.py system
+$ ./userids.py normal
+
+
+If you want to process /etc/passwd and /etc/group instead of the test files,
+replace:
+  users = Users("../../etc/userids/etc_passwd")
+  groups = Groups("../../etc/userids/etc_group")
+ 
+with:
+  users = Users()
+  groups = Groups()
+
+in "function" main().
+

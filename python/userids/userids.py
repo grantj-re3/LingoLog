@@ -9,7 +9,7 @@
 # With the argument 'system' only user IDs less than 1000 will be shown.
 # With the argument 'normal' only user IDs greater or equal to 1000 will be shown.
 ##############################################################################
-#import sys
+import sys
 
 ##############################################################################
 class User:
@@ -66,12 +66,20 @@ class Groups:
 ##############################################################################
 # main()
 ##############################################################################
-# FIXME: Process command-line arguments
+# Process command-line arguments
+report = ""
+if len(sys.argv) > 1:
+  report = {"system": "system", "normal": "normal"}.get(sys.argv[1].rstrip('\n').lower(), "")
 
 users = Users("../../etc/userids/etc_passwd")
 groups = Groups("../../etc/userids/etc_group")
 
 for uid in users.uids_orig_order:
+  if report == "system" and int(uid) >= 1000:		# System UIDs: 0-999
+    continue
+  if report == "normal" and int(uid) < 1000:		# Normal UIDs: 1000-
+    continue
+
   group_strs = [ "%s(%s)" % (users.gids[uid], groups.gnames[ users.gids[uid] ]) ]
   gids_without_prim = [ gid for gid in groups.gids_by_uname(users.unames[uid]) if gid not in [ users.gids[uid] ] ]
   for gid in gids_without_prim:
