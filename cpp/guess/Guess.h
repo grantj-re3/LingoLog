@@ -13,7 +13,6 @@ class Guess {
     int getMax();
     void setTarget();
     int getTarget();
-    int getGuess(std::string);
     bool isSuccessful(int, int, std::string*);
 };
 

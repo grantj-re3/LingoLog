@@ -37,14 +37,6 @@ int Guess::getTarget() {
 }
 
 /****************************************************************************/
-int Guess::getGuess(string prompt) {
-  int guess;
-  cout << prompt;
-  cin >> guess;
-  return guess;
-}
-
-/****************************************************************************/
 bool Guess::isSuccessful(int guess, int nTurns, std::string *msg) {	// FIXME: Use bool in caller? See other progs?
   ostringstream oss;
   bool isEqual = (guess == target);

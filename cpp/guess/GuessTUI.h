@@ -4,6 +4,7 @@
 class GuessTUI {
   public:
     static int main();
+    static int getGuess(std::string);
 };
 
 #endif
