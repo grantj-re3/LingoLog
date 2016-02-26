@@ -1,11 +1,9 @@
 #include <iostream>
 #include <cstdlib>
-//#include <stdio.h>
 #include <string>
 #include <sstream>
 #include <regex>
 #include <locale>
-
 
 #include "GuessTUI.h"
 #include "Guess.h"

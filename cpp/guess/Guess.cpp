@@ -8,10 +8,10 @@
 using namespace std;
 
 /****************************************************************************/
-/*
-  HighStr = {true => "HIGH", false => "LOW"}	// FIXME: Add assoc array
- */
-
+map <bool, std::string> Guess::high_str = {
+  {true, "HIGH"},
+  {false, "LOW"},
+};
 int Guess::MaxDefault = 7;
 string Guess::PadMsg = string(6, ' ');
 
@@ -44,7 +44,7 @@ bool Guess::isSuccessful(int guess, int nTurns, std::string *msg) {	// FIXME: Us
   if(isEqual)
     oss << Guess::PadMsg << guess << " is correct, congratulations! You took " << nTurns << " turn(s).";
   else
-    oss << Guess::PadMsg << guess << " is too " << (guess > target ? "HIGH" : "LOW") << ". Try again.";
+    oss << Guess::PadMsg << guess << " is too " << high_str[guess > target] << ". Try again.";
 
   *msg = oss.str();
   return isEqual;
