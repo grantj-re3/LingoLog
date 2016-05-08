@@ -1,0 +1,48 @@
+
+ASCII card-representation ideas
+===============================
+
+In my view, none of the "cards" in this file look good.
+
+In my view, these "cards" look reasonable:
+ --   --   --   -- 
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+ --   --   --   -- 
+               
+.--. .--. .--. .--.
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+.--. .--. .--. .--.
+               
+ __   __   __   __ 
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+ --   --   --   -- 
+          
++--+ +--+ +--+ +--+
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
++--+ +--+ +--+ +--+
+               
+In my view, these "cards" look poor:
+---- ---- ---- ----
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+---- ---- ---- ----
+               
+/--\ /--\ /--\ /--\
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+\--/ \--/ \--/ \--/
+               
+|--| |--| |--| |--|
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+|--| |--| |--| |--|
+               
+____ ____ ____ ____
+|Jc| |Qd| |Kh| |As|
+|cJ| |dQ| |hK| |sA|
+____ ____ ____ ____
+
