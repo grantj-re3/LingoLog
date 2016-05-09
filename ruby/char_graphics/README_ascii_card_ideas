@@ -5,6 +5,27 @@ ASCII card-representation ideas
 In my view, none of the "cards" in this file look good.
 
 In my view, these "cards" look reasonable:
+
+J--. Q--. K--. A--.
+| c| | d| | h| | s|
+|c | |d | |h | |s |
+.--J .--Q .--K .--A
+               
+J--  Q--  K--  A-- 
+| c| | d| | h| | s|
+|c | |d | |h | |s |
+ --J  --Q  --K  --A
+               
+J--- Q--- K--- A---
+| c| | d| | h| | s|
+|c | |d | |h | |s |
+---J ---Q ---K ---A
+               
+J--J Q--Q K--K A--A
+| c| | d| | h| | s|
+|c | |d | |h | |s |
+J--J Q--Q K--K A--A
+               
  --   --   --   -- 
 |Jc| |Qd| |Kh| |As|
 |cJ| |dQ| |hK| |sA|
@@ -24,8 +45,14 @@ In my view, these "cards" look reasonable:
 |Jc| |Qd| |Kh| |As|
 |cJ| |dQ| |hK| |sA|
 +--+ +--+ +--+ +--+
-               
+
 In my view, these "cards" look poor:
+
+JJJJ QQQQ KKKK AAAA
+J cJ Q dQ K hK A sA
+Jc J Qd Q Kh K As A
+JJJJ QQQQ KKKK AAAA
+               
 ---- ---- ---- ----
 |Jc| |Qd| |Kh| |As|
 |cJ| |dQ| |hK| |sA|
@@ -45,4 +72,18 @@ ____ ____ ____ ____
 |Jc| |Qd| |Kh| |As|
 |cJ| |dQ| |hK| |sA|
 ____ ____ ____ ____
+
+Smaller cards:
+
+J-. Q-. K-. A-.
+|c| |d| |h| |s|
+.-J .-Q .-K .-A
+
+J-- Q-- K-- A--
+|c| |d| |h| |s|
+--J --Q --K --A
+
+J-  Q-  K-  A- 
+|c| |d| |h| |s|
+ -J  -Q  -K  -A
 
