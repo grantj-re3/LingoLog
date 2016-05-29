@@ -1,0 +1,19 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Version
+$ ruby -v
+ruby 2.0.0p353 (2013-11-22 revision 43784) [x86_64-linux]
+
+# Run the MVC example
+$ ./mvcpatterndemo.rb
+
+##############################################################################
+The intention is to give a very simple MVC example from first principles
+(without using a web framework or other framework library).
+
+This ruby program gives a small enhancement to MVC example in folder
+example_mvc. The change gives a more interesting controller with a
+simple event-loop.
+
