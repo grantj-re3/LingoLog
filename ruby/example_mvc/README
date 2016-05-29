@@ -1,0 +1,18 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Version
+$ ruby -v
+ruby 2.0.0p353 (2013-11-22 revision 43784) [x86_64-linux]
+
+# Run the MVC example
+$ ./mvcpatterndemo.rb
+
+##############################################################################
+This ruby program is based on the Model-View-Controller (MVC) pattern java
+example at http://www.tutorialspoint.com/design_pattern/mvc_pattern.htm
+
+The intention is to give a very simple MVC example from first principles
+(without using a web framework or other framework library).
+
