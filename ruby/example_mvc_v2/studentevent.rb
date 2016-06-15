@@ -1,4 +1,4 @@
-# studentcontroller.rb
+# studentevent.rb
 ##############################################################################
 class StudentEvent
 

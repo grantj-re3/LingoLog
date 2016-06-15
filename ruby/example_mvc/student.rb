@@ -1,4 +1,5 @@
-# studentmodel.rb
+# student.rb
+# MVC Model
 ##############################################################################
 class Student
 
