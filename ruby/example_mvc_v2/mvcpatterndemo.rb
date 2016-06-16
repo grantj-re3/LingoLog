@@ -22,14 +22,13 @@ end
 ##############################################################################
 
 # Fetch student record based on his roll no from the database
-model = retrive_student_from_database
+student = retrive_student_from_database		# The model
 
 # Create a view : to write student details on console
 view = StudentView.new
-
 event = StudentEvent.new
+controller = StudentController.new(student, view, event)
 
-controller = StudentController.new(model, view, event)
-controller.update_view
+view.print_student_details(student.name, student.roll_no)
 controller.event_loop
 

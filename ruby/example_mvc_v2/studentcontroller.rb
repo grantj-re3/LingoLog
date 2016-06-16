@@ -4,8 +4,8 @@ class StudentController
 
   ############################################################################
   # Contructor for controller
-  def initialize(model, view, event)
-    @model = model
+  def initialize(student, view, event)
+    @student = student			# The model object
     @view = view
     @event = event
   end
@@ -23,37 +23,13 @@ class StudentController
 
       when :student_name
         # Update model data
-        set_student_name(e[:name])
+        @student.name = e[:name]
 
         # Update view
-        update_view
+        @view.print_student_details(@student.name, @student.roll_no)
       end
 
     end
-  end
-
-  ############################################################################
-  # Interact with Model
-  def set_student_name(name)
-    @model.name = name
-  end
-
-  def get_student_name
-    @model.name
-  end
-
-  def set_student_roll_no(roll_no)
-    @model.roll_no = roll_no
-  end
-
-  def get_student_roll_no
-    @model.roll_no
-  end
-
-  ############################################################################
-  # Interact with View
-  def update_view
-    @view.print_student_details(@model.name, @model.roll_no)
   end
 
 end
