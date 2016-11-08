@@ -1,18 +1,19 @@
+# AngularJS 1 - guess.html
 
-# Fedora release 20 (Heisenbug)
+## Fedora release 20 (Heisenbug)
 -  Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
 
-# Version
+## Version
 - AngularJS 1
 - v1.4.8
 - https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js
 
-# Run the Guess program (web user-interface)
+## Run the Guess program (web user-interface)
 - Start your favourite web browser eg. Google Chrome 40.0.2214.94 (64-bit),
   or Mozilla Firefox 35.0
 - Naviagate to guess.html. Eg. file:///PATH/TO/LingoLog/angularjs1/guess/guess.html
 
-# References
+## References
 - https://docs.angularjs.org/api/ng/directive/ngHide
 - http://www.w3schools.com/angular/ng_ng-click.asp
 
