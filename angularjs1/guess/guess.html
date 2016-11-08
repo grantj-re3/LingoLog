@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guess a number (AngularJS 1)</title>
+    <!--
+      Alternatively, invoke a local copy of angular.min.js, eg.
+      <script src="angular.min.local148.js"></script>
+    -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  </head>
+  <body>
+    <h1>Guess a number (AngularJS 1)</h1>
+    <div ng-app="guessApp" ng-controller="guessCtrl">
+
+      <p>I have chosen a number between 1 to {{max()}} inclusive. You guess it!</p>
+
+      <p>
+        Guess: <input type="text" ng-model="guess" ng-disabled="disableGuess">
+        <button ng-click="updateFeedback()" ng-disabled="disableGuess">Submit guess</button>
+      </p>
+      <p><strong>Hint:</strong> {{hint}}</p>
+      <p><strong>Message:</strong> {{feedback}}</p>
+      <p><strong>New range (inclusive):</strong> {{updateRangeMsg()}}</p>
+      <p> <input type="button" onClick="history.go(0)" value="Restart game"> </p>
+
+      <p><strong>History:</strong></p>
+      <div ng-repeat="this_hint in hints">
+      <br>[{{$index + 1}}] {{this_hint}}</br>
+      </div>
+    </div>
+
+
+    <script>
+      var app = angular.module('guessApp', []);
+
+      app.controller('guessCtrl', function($scope) {
+        const MAX = 7		// Make MAX read-only everywhere
+        var target = Math.floor(Math.random() * MAX) + 1;	// 1..MAX
+        var guessMin = 1;
+        var guessMax = MAX;
+     
+        $scope.hint = "";
+        $scope.hints = [];
+        $scope.feedback = "";
+        $scope.disableGuess = false;
+
+        //////////////////////////////////////////////////////////////////////
+        $scope.max = function() {
+          return MAX;
+        };
+
+        //////////////////////////////////////////////////////////////////////
+        $scope.target = function() {
+          return target;	// Make target read-only to web page
+        };
+
+        //////////////////////////////////////////////////////////////////////
+        $scope.updateRangeMsg = function() {
+          return guessMin.toString() + " to " + guessMax.toString();
+        };
+
+        //////////////////////////////////////////////////////////////////////
+        $scope.updateFeedback = function() {
+          var msg;
+          var guess = parseInt($scope.guess);
+          if (isNaN(guess)) {
+            $scope.feedback = "Please try again. '" + $scope.guess + "' is not an integer";
+            $scope.guess = "";
+            return;
+          }
+          if (guess > target) {
+            msg = "is too big";
+            $scope.feedback = "";
+            if (guess <= guessMax) {guessMax = guess - 1;}
+          } else if (guess < target) {
+            msg = "is too small";
+            $scope.feedback = "";
+            if (guess >= guessMin) {guessMin = guess + 1;}
+          } else if (guess == target) {
+            msg = "is correct. Congratulations!";
+            $scope.feedback = "Click Restart game button to play again";
+
+            guessMin = guess;
+            guessMax = guess;
+            $scope.disableGuess = true;
+          }
+          $scope.hint = "Guess " + $scope.guess + " " + msg;
+          $scope.hints.push($scope.hint);
+          $scope.guess = "";
+        };
+      });
+    </script>
+
+  </body>
+</html>
+
