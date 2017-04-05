@@ -1,0 +1,17 @@
+
+# Fedora release 20 (Heisenbug)
+# Linux 3.11.10-301.fc20.x86_64 #1 SMP Thu Dec 5 14:01:17 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+
+# Free Pascal Compiler (FPC).
+# Version
+$ fpc -iV
+2.6.2
+
+# Compile the sources.
+# Ignore the linker warning:
+#   /usr/bin/ld: warning: link.res contains output sections; did you forget -T?
+$ fpc guess
+
+# Run the Guess program (text user-interface)
+$ ./guess
+
