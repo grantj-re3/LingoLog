@@ -6,7 +6,7 @@ program GuessHighLow;
 uses sysutils;		// For Format(), Trim(), LowerCase()
 
 const
-  MaxDefault = 4;
+  MaxDefault = 100;
 
 type
   GuessStatusType = record
