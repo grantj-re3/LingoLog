@@ -1,0 +1,15 @@
+
+# Fedora release 25 (Twenty Five)
+# Linux 4.8.6-300.fc25.x86_64 #1 SMP Tue Nov 1 12:36:38 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+# with Cinnamon desktop environment
+
+
+# Scratch v1.4 (Linux) of 2-Dec-11
+
+
+Assuming you've already installed scratch (eg. via dnf/yum) then:
+- Run Scratch from the menu or type:
+    $ /usr/bin/scratch
+- Then navigate to: File > Open > scratch-program-file > OK
+- Run program by clicking the Green Flag (near the top right).
+
