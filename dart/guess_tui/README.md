@@ -1,8 +1,52 @@
+# Dart - guess_tui
 
-# Dart - guess_tui (guess-the-number game with text user-interface)
+Guess-the-number game using a text user-interface
+
+
+## To run the code (under Linux)
+
+Assumes you have installed Dart SDK version 2.18.x or similar as per references below.
+
+Get any required packages, compile and run with *dart run*.
+
+```
+$ cd dart/guess_tui
+$ dart run
+
+# ...or to change the maximum value of the secret number to, say 1,000
+$ dart run guess_tui 1000
+```
+
+
+## Commands
+
+Creates the "lib" directory. Use this template
+
+```
+$ dart create -t console-full guess_tui
+```
+
+Which version of dart am I using?  2.18.0-x
+
+```
+$ egrep -A1 ^environment pubspec.yaml
+environment:
+  sdk: '>=2.18.0-edge.a5a7b4c801b7d8ecf44bdc25cd0b1e7c6e48b7f9 <3.0.0'
+```
+
+Add the format package so I can invoke the statement:
+> import 'package:format/format.dart';
+
+See "Installing" tab at https://pub.dev/packages/format.
+This command updates pubspec.yaml (and hence pubspec.lock)
+
+```
+$ dart pub add format
+```
 
 ## References
 
+- https://dart.dev/get-dart
 - https://dart.dev/samples
 - https://dart.dev/guides/language/language-tour
 - https://dart.dev/guides/libraries/library-tour
@@ -26,41 +70,4 @@
 - https://api.dart.dev/stable/2.15.1/dart-core/Map-class.html
 - https://api.dart.dev/stable/2.17.0/dart-core/RegExp-class.html
 - https://www.w3schools.com/jsref/jsref_obj_regexp.asp
-
-## Commands
-
-Creates the "lib" directory. Use this template
-
-```
-$ dart create -t console-full guess_tui
-```
-
-Which version of dart am I using?  2.18.0-x
-
-```
-$ egrep -A1 ^environment pubspec.yaml
-environment:
-  sdk: '>=2.18.0-edge.a5a7b4c801b7d8ecf44bdc25cd0b1e7c6e48b7f9 <3.0.0'
-```
-
-Add the format package so I can invoke the statement:
-> import 'package:format/format.dart';
-See "Installing" tab at https://pub.dev/packages/format.
-This command updates pubspec.yaml (and hence pubspec.lock)
-
-```
-$ dart pub add format
-```
-
-## To run the code (under Linux)
-
-Get any required packages, compile and run with *dart run*
-
-```
-$ cd LingoLog/dart/guess_tui
-$ dart run
-
-# ...or to change the maximum value of the secret number to, say 1,000
-$ dart run guess_tui 1000
-```
 
