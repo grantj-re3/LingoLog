@@ -37,9 +37,9 @@ $ bin/guess_tui.exe 1000
 ```
 
 
-## Commands
+## Commands used during this project
 
-Creates the "lib" directory. Use this template
+Create this project. This template creates the "lib" directory, etc.
 
 ```
 $ dart create -t console-full guess_tui
