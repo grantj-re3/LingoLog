@@ -7,7 +7,7 @@ Guess-the-number game using a text user-interface
 
 Assumes you have installed Dart SDK version 2.18.x or similar as per references below.
 
-Get any required packages, compile and run with *dart run*.
+Get any required packages, compile and run - all with *dart run*.
 
 ```
 $ cd dart/guess_tui
@@ -15,6 +15,25 @@ $ dart run
 
 # ...or to change the maximum value of the secret number to, say 1,000
 $ dart run guess_tui 1000
+```
+
+Alternatively, manually get the packages, compile and save the compiled
+version so you can *run a fast/compiled version*.
+
+```
+$ cd dart/guess_tui
+
+# Get packages
+$ dart pub get
+
+# Compile and save output at path bin/guess_tui.exe
+$ dart compile exe -o bin/guess_tui.exe  bin/guess_tui.dart
+
+# Run the compiled output
+$ bin/guess_tui.exe
+
+# Run the compiled output with an argument (i.e. secret number max of 1,000)
+$ bin/guess_tui.exe 1000
 ```
 
 
@@ -60,6 +79,8 @@ $ dart pub add format
 - https://dart.dev/tools/pub/pubspec
 - https://semver.org/spec/v2.0.0-rc.1.html
 
+- https://dart.dev/tools/pub/cmd/pub-get
+- https://dart.dev/tools/dart-compile
 - https://dart.dev/tools/dart-create
 - https://dart.dev/tools/dart-run
 - https://pub.dev/packages/format
