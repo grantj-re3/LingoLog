@@ -19,10 +19,15 @@
    - [TradingView | User Manual: FAQ: Get a 5-days high](https://www.tradingview.com/pine-script-docs/en/v5/Faq.html#get-a-5-days-high)
      * Comment says: Intialize `maxHi` with `var` on bar zero only. This way, its value is preserved, bar to bar.
 
-1. [TradingView | User Manual: Concepts: Bar states](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Bar_states.html)
+1. [TradingView | User Manual: Language: User-defined functions: Scopes in the script](https://www.tradingview.com/pine-script-docs/en/v5/language/User-defined_functions.html#scopes-in-the-script)
+   - Variables declared outside the body of a function or of other local blocks belong to the global scope. User-declared and built-in functions, as well as built-in variables also belong to the global scope.
+   - Each function has its own local scope. All the variables declared within the function, as well as the function’s arguments, belong to the scope of that function...
 
 
 ## Useful details
+
+1. [TradingView | User Manual: Language: Built-ins](https://www.tradingview.com/pine-script-docs/en/v5/language/Built-ins.html)
+1. [TradingView | User Manual: Concepts: Bar states](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Bar_states.html)
 
 1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
 1. [TradingView | Pine Script language reference manual: last_bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_last_bar_index)
