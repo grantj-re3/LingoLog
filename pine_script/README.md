@@ -32,3 +32,8 @@
 1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
 1. [TradingView | Pine Script language reference manual: last_bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_last_bar_index)
 
+1. Writing scripts
+   - [TradingView | User Manual: Writing scripts: Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
+   - [TradingView | User Manual: Writing scripts: Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
+   - [TradingView | User Manual: Writing scripts: Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+
