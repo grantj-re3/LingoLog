@@ -32,8 +32,23 @@
 1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
 1. [TradingView | Pine Script language reference manual: last_bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_last_bar_index)
 
-1. Writing scripts
-   - [TradingView | User Manual: Writing scripts: Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
-   - [TradingView | User Manual: Writing scripts: Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
-   - [TradingView | User Manual: Writing scripts: Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+1. TradingView | User Manual: Writing scripts
+   - [Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
+   - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
+   - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+
+
+## Info from other sources (not TradingView)
+
+1. [TradingCode | TradingView Pine Script programming tutorials](https://www.tradingcode.net/tradingview-pine-script-course/)
+   - 10 sections and 39 chapters of Pine Script programming tutorials
+
+1. [PineCoders | Home page](https://www.pinecoders.com/)
+   - [Learning Pine Script Roadmap](https://www.pinecoders.com/learning_pine_roadmap/)
+   - [FAQ & Code](https://www.pinecoders.com/faq_and_code/)
+   - [Pine Script Resources](https://www.pinecoders.com/resources/)
+
+1. [Reddit | TradingView subreddit forum](https://www.reddit.com/r/TradingView/)
+
+1. [Stack Overflow | Q&A with pine-script tag](https://stackoverflow.com/questions/tagged/pine-script?tab=Newest)
 
