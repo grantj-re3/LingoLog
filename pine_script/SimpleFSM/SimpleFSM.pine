@@ -1,0 +1,119 @@
+//@version=5
+indicator("Simple Finite State Machine", overlay=true)
+
+// Test various concepts and Pine Script features, including:
+// - Finite State Machine (FSM)
+// - 'var' variable declaration (for FSM state)
+// - User defined functions
+// - input()
+// - plotchar()
+// - bgcolor()
+// - time
+// - bar_index & last_bar_index
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+DEBUG_FSM_STATES = false
+TEST_FSM_ERROR = false
+CHAR_ERROR = "🔥"   // 👎✋⚠⛔⚡🔥  See Unicode Emojis at https://www.prosettings.com/emoji-list/
+
+// Colours
+COLOR_NONE = color(na)
+COLOR_BLUE = #0050FF40
+
+// Finite State Machine: States
+//ST_START            = 0
+ST_WAIT4_START_DATE = 1
+ST_WAIT4_LAST_DAYS  = 2
+ST_SHOW_END         = 3
+ST_FAKE_ERROR       = 9
+
+//////////////////////////////////////////////////////////////////////////////
+// INPUTS
+//////////////////////////////////////////////////////////////////////////////
+inStartBegin = input.bool(false, title="Start at beginning? [or else use date below]", group = "Start Date")
+inStartDate = input.time(timestamp("1 Jul 2023 00:00"), title="Date", group = "Start Date")
+startDate = inStartBegin ? na : inStartDate // na implies the start date is the beginning
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS
+//////////////////////////////////////////////////////////////////////////////
+//@function    Calculate the booleans needed to spell "THE END" with plotchar() on the last 7 days of the chart.
+//@param state The current (integer) state of the Finite State Machine.
+//@returns     A tuple of booleans to enable plotting of the associated alpha chars.
+isPlotTheEnd(state) =>
+    if state == ST_SHOW_END
+        // The CHAR below is displayed at day 'last_bar_index - POS' (for the POS below):
+        //   CHAR: T H E   E N D
+        //   POS:  6 5 4 3 2 1 0
+        isPlotT = bar_index == last_bar_index - 6
+        isPlotH = bar_index == last_bar_index - 5
+        // The letter-E is used twice in "THE END"
+        isPlotE = bar_index == last_bar_index - 4 or bar_index == last_bar_index - 2
+        isPlotN = bar_index == last_bar_index - 1
+        isPlotD = bar_index == last_bar_index
+        [isPlotT, isPlotH, isPlotE, isPlotN, isPlotD]   // Return tuple
+    else
+        [false, false, false, false, false]             // Return tuple
+
+//@function    Calculate the booleans needed to display the FSM state.
+//@param state The current (integer) state of the Finite State Machine.
+//@returns     A tuple of booleans to enable plotting of the associated FSM state.
+isPlotFsmStates(state) =>
+    isPlotState1 = state == 1 and DEBUG_FSM_STATES
+    isPlotState2 = state == 2 and DEBUG_FSM_STATES
+    isPlotState3 = state == 3 and DEBUG_FSM_STATES
+    [isPlotState1, isPlotState2, isPlotState3]
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+var state = na(startDate) or time >= startDate ? 
+  (bar_index >= last_bar_index - 6 ? ST_SHOW_END : ST_WAIT4_LAST_DAYS) : 
+  ST_WAIT4_START_DATE
+bgColor = COLOR_BLUE
+isError = false
+
+switch state
+    ST_WAIT4_START_DATE =>
+        // startDate cannot be na in this state
+        bgColor := COLOR_BLUE
+        if time >= startDate
+            state := bar_index >= last_bar_index - 6 ? ST_SHOW_END : ST_WAIT4_LAST_DAYS
+            bgColor := COLOR_NONE
+
+    ST_WAIT4_LAST_DAYS =>
+        bgColor := COLOR_NONE
+        if bar_index >= last_bar_index - 6
+            state := ST_SHOW_END
+
+    ST_SHOW_END =>
+        bgColor := COLOR_NONE
+        if TEST_FSM_ERROR and bar_index >= last_bar_index - 4
+            state := ST_FAKE_ERROR         // Simulate an FSM error
+
+    =>
+        // Something is wrong! We should never get here
+        isError := true
+        bgColor := COLOR_NONE
+
+//////////////////////////////////////////////////////////////////////////////
+// VISUALS
+//////////////////////////////////////////////////////////////////////////////
+[isPlotT, isPlotH, isPlotE, isPlotN, isPlotD] = isPlotTheEnd(state)
+plotchar(isPlotT, char="T", size=size.small, color=color.green, location=location.belowbar)
+plotchar(isPlotH, char="H", size=size.small, color=color.green, location=location.belowbar)
+plotchar(isPlotE, char="E", size=size.small, color=color.green, location=location.belowbar)
+plotchar(isPlotN, char="N", size=size.small, color=color.green, location=location.belowbar)
+plotchar(isPlotD, char="D", size=size.small, color=color.green, location=location.belowbar)
+
+plotchar(isError, char=CHAR_ERROR, size=size.tiny, color=color.green, location=location.belowbar)
+bgcolor(bgColor)
+
+// Debug FSM: Assign DEBUG_FSM_STATES to true to display FSM state (integer) at each bar
+[isPlotState1, isPlotState2, isPlotState3] = isPlotFsmStates(state)
+plotchar(isPlotState1, char="1", size=size.small, color=color.green, location=location.abovebar)
+plotchar(isPlotState2, char="2", size=size.small, color=color.green, location=location.abovebar)
+plotchar(isPlotState3, char="3", size=size.small, color=color.green, location=location.abovebar)
+
