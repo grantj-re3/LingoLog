@@ -24,20 +24,6 @@
    - Each function has its own local scope. All the variables declared within the function, as well as the function’s arguments, belong to the scope of that function...
 
 
-## Useful details
-
-1. [TradingView | User Manual: Language: Built-ins](https://www.tradingview.com/pine-script-docs/en/v5/language/Built-ins.html)
-1. [TradingView | User Manual: Concepts: Bar states](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Bar_states.html)
-
-1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
-1. [TradingView | Pine Script language reference manual: last_bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_last_bar_index)
-
-1. TradingView | User Manual: Writing scripts
-   - [Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
-   - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
-   - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
-
-
 ## Info from other sources (not TradingView)
 
 1. [TradingCode | TradingView Pine Script programming tutorials](https://www.tradingcode.net/tradingview-pine-script-course/)
@@ -51,4 +37,36 @@
 1. [Reddit | TradingView subreddit forum](https://www.reddit.com/r/TradingView/)
 
 1. [Stack Overflow | Q&A with pine-script tag](https://stackoverflow.com/questions/tagged/pine-script?tab=Newest)
+
+
+## Useful details
+
+1. [TradingView | User Manual: Language: Built-ins](https://www.tradingview.com/pine-script-docs/en/v5/language/Built-ins.html)
+1. [TradingView | User Manual: Concepts: Bar states](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Bar_states.html)
+
+1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
+1. [TradingView | Pine Script language reference manual: last_bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_last_bar_index)
+
+1. TradingView | User Manual: Writing scripts
+   - [Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
+   - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
+   - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+
+### Time and time zones
+
+- https://www.tradingview.com/pine-script-docs/en/v5/concepts/Time.html
+- https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp
+- https://www.tradingview.com/pine-script-reference/v5/#var_time
+- https://www.tradingview.com/pine-script-reference/v5/#fun_input{dot}time
+- https://www.tradingcode.net/tradingview/time-zone-functions-variables/
+- https://www.tradingcode.net/tradingview/time-date-input/
+
+input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. Also timestamp() has the default timezone of syminfo.timezone (the instrument's exchange timezone). Hence we can happily omit the timezone from a timestamp() and compare it with 'time' (opening-time). If we use such a timestamp() as the default value of input.time(), we can also compare that input-value with 'time'. For example:
+
+```
+i_date = input.time(timestamp("20 Jul 2021 00:00"), "Date")
+...
+if time > i_date    // IF the bar-open time after "20 Jul 2021 00:00" (in the exchange's timezone) THEN ...
+    ...
+```
 
