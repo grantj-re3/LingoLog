@@ -56,17 +56,36 @@
 
 - https://www.tradingview.com/pine-script-docs/en/v5/concepts/Time.html
 - https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp
+- https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp-0
 - https://www.tradingview.com/pine-script-reference/v5/#var_time
-- https://www.tradingview.com/pine-script-reference/v5/#fun_input{dot}time
+- https://www.tradingview.com/pine-script-reference/v5/#fun_input.time
+- https://www.tradingview.com/blog/en/new-parameter-for-date-input-added-to-pine-21812/
 - https://www.tradingcode.net/tradingview/time-zone-functions-variables/
 - https://www.tradingcode.net/tradingview/time-date-input/
 
-input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. Also timestamp() has the default timezone of syminfo.timezone (the instrument's exchange timezone). Hence we can happily omit the timezone from a timestamp() and compare it with 'time' (opening-time). If we use such a timestamp() as the default value of input.time(), we can also compare that input-value with 'time'. For example:
+
+input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. However:
+
+- The input.time() function has an argument "defval" which allows you to set a default date/time.
+  The "defval" argument can be the timestamp() function provided it returns a "const int".
+  Only timestamp(dateString) returns "const int" (whereas other timestamp() calls return "simple int" or "series int").
+- For timestamp(dateString), the doco at https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp-0
+  says: *If no time zone is supplied, GMT+0 will be used. Note that this diverges from the usual behavior of the
+  function where it returns time in the exchange's timezone.*
+  Hence if you would like your timestamp() to select the correct date on your daily-chart for the NY stock exchange
+  (NYSE) in the NY timezone, you need to add a suitable timezone to timestamp(dateString).
+- The New York timezone is GMT-5 (EST) or GMT-4 (EDT). Hence GMT-5 timezone gives 0:00 or 1:00
+  NY time on the *CORRECT* day for NYSE stocks where the daily-chart timezone is UTC-5 or UTC-4.
+
+If we use such a timestamp() as the default value of input.time(), we can compare that input-value with 'time'. For example:
 
 ```
-i_date = input.time(timestamp("20 Jul 2021 00:00"), "Date")
+TIMEZONE_STK_EX = "GMT-5"       // NYSE timezone
+START_TIME_DEFAULT = "1 Feb 2023 00:00 " + TIMEZONE_STK_EX // Add a space after the date/time & before timezone
+inputDate = input.time(timestamp(START_TIME_DEFAULT), title="Date")
+
 ...
-if time > i_date    // IF the bar-open time after "20 Jul 2021 00:00" (in the exchange's timezone) THEN ...
+if time > inputDate    // IF the bar-open time is after "1 Feb 2023 00:00" (in the NYSE timezone) THEN ...
     ...
 ```
 

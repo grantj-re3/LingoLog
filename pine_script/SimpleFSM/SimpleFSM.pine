@@ -29,11 +29,16 @@ ST_WAIT4_LAST_DAYS  = 2
 ST_SHOW_END         = 3
 ST_FAKE_ERROR       = 9
 
+// The New York timezone is GMT-5 (EST) or GMT-4 (EDT). Hence GMT-5 timezone gives 0:00 or 1:00
+// NY time on the *CORRECT* day for NYSE stocks where the chart timezone is UTC-5 or UTC-4.
+TIMEZONE_STK_EX = "GMT-5"           // NYSE timezone
+START_TIME_DEFAULT = "1 Aug 2023 00:00 " + TIMEZONE_STK_EX // Add a space after the date/time & before timezone
+
 //////////////////////////////////////////////////////////////////////////////
 // INPUTS
 //////////////////////////////////////////////////////////////////////////////
 inStartBegin = input.bool(false, title="Start at beginning? [or else use date below]", group = "Start Date")
-inStartDate = input.time(timestamp("1 Jul 2023 00:00"), title="Date", group = "Start Date")
+inStartDate = input.time(timestamp(START_TIME_DEFAULT), title="Date", group = "Start Date")
 startDate = inStartBegin ? na : inStartDate // na implies the start date is the beginning
 
 //////////////////////////////////////////////////////////////////////////////
