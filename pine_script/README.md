@@ -55,7 +55,7 @@
    - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
 
 
-### Common language features
+### Language statements
 
 1. Loops
    - [TradingView | Loops](https://www.tradingview.com/pine-script-docs/en/v5/language/Loops.html)
@@ -75,6 +75,16 @@
      * key-value pairs
    - [TradingView | Objects](https://www.tradingview.com/pine-script-docs/en/v5/language/Objects.html); Also known as:
      * User-Defined Types (UDTs)
+1. Inputs
+   - [TradingView | Inputs](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Inputs.html)
+1. Plotting and labels
+   - [TradingView | Text and shapes](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Text_and_shapes.html)
+     * plotchar()
+     * plotshape()
+     * plotarrow()
+     * labels
+   - [TradingView | Plotting shapes, chars and arrows](https://www.tradingview.com/pine-script-docs/en/v4/annotations/Plotting_shapes_chars_and_arrows.html)
+   - [TradingView | Plots](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Plots.html)
 
 
 ### Time and time zones
