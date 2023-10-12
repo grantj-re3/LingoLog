@@ -42,6 +42,8 @@
 ## Useful details
 
 1. [TradingView | User Manual: Language: Built-ins](https://www.tradingview.com/pine-script-docs/en/v5/language/Built-ins.html)
+   - built-in functions
+   - built-in variables
 1. [TradingView | User Manual: Concepts: Bar states](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Bar_states.html)
 
 1. [TradingView | Pine Script language reference manual: bar_index](https://www.tradingview.com/pine-script-reference/v5/#var_bar_index)
@@ -51,6 +53,29 @@
    - [Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
    - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
    - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+
+
+### Common language features
+
+1. Loops
+   - [TradingView | Loops](https://www.tradingview.com/pine-script-docs/en/v5/language/Loops.html)
+   - [TradingView | for](https://www.tradingview.com/pine-script-reference/v5/#op_for)
+   - [TradingView | while](https://www.tradingview.com/pine-script-reference/v5/#op_while)
+1. Functions
+   - [TradingView | User-defined functions](https://www.tradingview.com/pine-script-docs/en/v5/language/User-defined_functions.html)
+   - See *User Manual: Language: Built-ins* above for built-in functions
+1. Data structures
+   - [TradingView | Arrays](https://www.tradingview.com/pine-script-docs/en/v5/language/Arrays.html)
+   - [TradingView | Matrices](https://www.tradingview.com/pine-script-docs/en/v5/language/Matrices.html)
+   - [TradingView | Maps](https://www.tradingview.com/pine-script-docs/en/v5/language/Maps.html); Also known as:
+     * hashmaps
+     * hashs
+     * associative arrays
+     * dictionaries
+     * key-value pairs
+   - [TradingView | Objects](https://www.tradingview.com/pine-script-docs/en/v5/language/Objects.html); Also known as:
+     * User-Defined Types (UDTs)
+
 
 ### Time and time zones
 
