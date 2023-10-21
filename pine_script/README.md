@@ -26,6 +26,12 @@
 
 ## Info from other sources (not TradingView)
 
+1. [Matthew J. Slabosz | The Art of Trading (Youtube channel)](https://www.youtube.com/@TheArtOfTrading/videos)
+   - [The Art of Trading (website)](https://theartoftrading.com/)
+   - [Pine Script debug PRINT LOGS are finally here! (video) | 2023](https://www.youtube.com/watch?v=EeGEdVehWT0)
+   - [How to AUTOMATE a Pine Script STRATEGY AutoView Guide (PART 6/8) [PSv4] (video) | 2021](https://www.youtube.com/watch?v=BvbnzQwLmNQ)
+   - [WARNING: Never Trust TradingView's Strategy Tester! (video) | 2021](https://www.youtube.com/watch?v=uM5m_iUAP8g)
+
 1. [TradingCode | TradingView Pine Script programming tutorials](https://www.tradingcode.net/tradingview-pine-script-course/)
    - 10 sections and 39 chapters of Pine Script programming tutorials
 
