@@ -23,14 +23,36 @@
    - Variables declared outside the body of a function or of other local blocks belong to the global scope. User-declared and built-in functions, as well as built-in variables also belong to the global scope.
    - Each function has its own local scope. All the variables declared within the function, as well as the function’s arguments, belong to the scope of that function...
 
+1. [TradingView | User Manual: Release notes](https://www.tradingview.com/pine-script-docs/en/v5/Release_notes.html)
+   - Keep up to date with the latest language features.
+   - There appears to be a new release about once per month.
+
+1. [TradingView | Pine Script: Blog](https://www.tradingview.com/blog/en/category/pine/)
+   - [Pine Script® now features maps! | 2023](https://www.tradingview.com/blog/en/pine-script-now-features-maps-40538/)
+     * Maps are also known as: hashmaps, hashs, associative arrays, dictionaries and key-value pairs
+   - [Debug your Pine Script® code with Pine Logs | 2023](https://www.tradingview.com/blog/en/pine-logs-in-pine-script-40490/)
+   - [Our Pine Script® Editor keeps getting better | 2023](https://www.tradingview.com/blog/en/pine-script-editor-updates-38650/)
+     * Includes an *Update on chart* feature which increments the minor version number
+   - [Method syntax comes to Pine Script® | 2023](https://www.tradingview.com/blog/en/method-syntax-in-pine-script-36909/)
+   - [Request more data from your scripts | 2022](https://www.tradingview.com/blog/en/request-more-data-from-your-scripts-31944/)
+     * Includes a new request.security_lower_tf() function which makes it easier to request data from a lower timeframe than the chart’s.
+   - [Edit your Pine code on a separate page | 2021](https://www.tradingview.com/blog/en/edit-your-pine-code-on-a-separate-page-28522/)
+     * The Pine editor can be in a separate window or tab
+
 
 ## Info from other sources (not TradingView)
 
 1. [Matthew J. Slabosz | The Art of Trading (Youtube channel)](https://www.youtube.com/@TheArtOfTrading/videos)
    - [The Art of Trading (website)](https://theartoftrading.com/)
    - [Pine Script debug PRINT LOGS are finally here! (video) | 2023](https://www.youtube.com/watch?v=EeGEdVehWT0)
+   - [How to DEBUG Pine Script Code (video) | 2023](https://www.youtube.com/watch?v=b3PaVZkDbDI)
+   - [How to use METHODS in Pine Script (video) | 2023](https://www.youtube.com/watch?v=PpXd2GL3cuE)
    - [How to AUTOMATE a Pine Script STRATEGY AutoView Guide (PART 6/8) [PSv4] (video) | 2021](https://www.youtube.com/watch?v=BvbnzQwLmNQ)
    - [WARNING: Never Trust TradingView's Strategy Tester! (video) | 2021](https://www.youtube.com/watch?v=uM5m_iUAP8g)
+     * Perhaps the bar magnifier feature below (released the following year) helps resolve the above issue?
+     * [How to use the BAR MAGNIFIER on TradingView (video) | 2022](https://www.youtube.com/watch?v=5UzXzewiFKQ)
+     * [TradingView | User Manual: Strategies; Broker emulator](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Strategies.html#broker-emulator)
+     * [TradingView | Backtest more accurately with the Bar Magnifier | 2022](https://www.tradingview.com/blog/en/accurate-backtesting-with-bar-magnifier-31746/)
 
 1. [TradingCode | TradingView Pine Script programming tutorials](https://www.tradingcode.net/tradingview-pine-script-course/)
    - 10 sections and 39 chapters of Pine Script programming tutorials
