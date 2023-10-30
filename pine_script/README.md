@@ -65,7 +65,14 @@
 1. [Reddit | TradingView subreddit forum](https://www.reddit.com/r/TradingView/)
 
 1. [Stack Overflow | Q&A with pine-script tag](https://stackoverflow.com/questions/tagged/pine-script?tab=Newest)
-
+   - [How to Change global variable from function in pine script? | 2020](https://stackoverflow.com/questions/60904563/how-to-change-global-variable-from-function-in-pine-script)
+     * Work-around: How to use an array [or map] to make *variables appear to be global* from within a function.
+     * [TradingView | Arrays: Scope](https://www.tradingview.com/pine-script-docs/en/v5/language/Arrays.html#scope) says: *scripts
+       can modify globally-assigned arrays from within local scopes, allowing users to implement global variables that any function
+       in the script can directly interact with*
+     * [TradingView | Maps: Scope and history](https://www.tradingview.com/pine-script-docs/en/v5/language/Maps.html#scope-and-history)
+       says: *Scripts can also assign maps to global variables and interact with them from the scopes of functions, methods, and
+       conditional structures*
 
 ## Useful details
 

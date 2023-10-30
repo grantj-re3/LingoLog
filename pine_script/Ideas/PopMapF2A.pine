@@ -1,0 +1,16 @@
+//@version=5
+indicator("Populate map from 2 arrays", shorttitle = "PopMapF2A")
+m = map.new<string, float>()
+
+// Populate the map with keys from one array & values from another
+keysArray =       array.from("a", "b", "c")
+for [i, value] in array.from(1.5, 2.5, 3.5)  // Iterate thru array of values; i is the index of both arrays
+    m.put(keysArray.get(i), value)
+
+// Show the content of our map
+i = 0
+if bar_index == 0
+    for [key, value] in m
+        i += 1
+        log.info("{0,number,0}: key={1} | value={2,number,0.00}", i, key, value)
+
