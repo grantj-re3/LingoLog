@@ -74,6 +74,10 @@
        says: *Scripts can also assign maps to global variables and interact with them from the scopes of functions, methods, and
        conditional structures*
 
+1. [kaigouthro | Pine Script 5 Mini Reference | 2023](https://gist.github.com/kaigouthro/b95a8b4c43e607ea71897e204904b9c0)
+   - Unofficial, but appears to be fairly complete and regularly updated
+   - All the info is on one page, so excellent for searching
+
 ## Useful details
 
 1. [TradingView | User Manual: Language: Built-ins](https://www.tradingview.com/pine-script-docs/en/v5/language/Built-ins.html)
@@ -96,9 +100,13 @@
    - [TradingView | Loops](https://www.tradingview.com/pine-script-docs/en/v5/language/Loops.html)
    - [TradingView | for](https://www.tradingview.com/pine-script-reference/v5/#op_for)
    - [TradingView | while](https://www.tradingview.com/pine-script-reference/v5/#op_while)
-1. Functions
+1. Functions & methods
    - [TradingView | User-defined functions](https://www.tradingview.com/pine-script-docs/en/v5/language/User-defined_functions.html)
-   - See *User Manual: Language: Built-ins* above for built-in functions
+     * See *User Manual: Language: Built-ins* above for built-in functions
+   - [TradingView | Methods](https://www.tradingview.com/pine-script-docs/en/v5/language/Methods.html)
+     * Users can access methods using dot notation on variables directly
+     * E.g. *id.get(index)* instead of *array.get(id, index)* if *id* is an array
+     * This notation is also available for user-defined types using the *method* keyword
 1. Data structures
    - [TradingView | Arrays](https://www.tradingview.com/pine-script-docs/en/v5/language/Arrays.html)
    - [TradingView | Matrices](https://www.tradingview.com/pine-script-docs/en/v5/language/Matrices.html)

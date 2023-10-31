@@ -1,0 +1,65 @@
+//@version=5
+indicator("GlobalVariableFunctionScope", shorttitle = "GlbVarScope")
+
+//////////////////////////////////////////////////////////////////////////////
+// Lessons:
+// - Note there is no such thing as a constant within Pine Script, they are
+//   all variables. There is only a recommended *style* for those variables
+//   which the programmer intends to behave as constants (e.g. MY_CONST).
+// - Any constants & vars declared at the left margin before a function
+//   definition are available to that function as *read-only* identifiers.
+//   Hence, you cannot do re-assignment (with ":=", "+=", "-=", etc.) of
+//   the global variable within a function.
+// - Within a function you can create a local variable (with the assignment
+//   operator "=") however:
+//   * it will remain local to that block and its children (so if it is
+//     created within an if-block within a function, it will not be
+//     available to all of the function's scope)
+// - CONCLUSION:
+//   * Use global constants & variables within functions as read-only. But note:
+//     + using global constants within a function is often best-practice
+//     + using global variables within a function is often NOT best-practice
+//   * If you ever get a warning "Shadowing variable ... which exists in 
+//     parent scope" then re-write your code to avoid the local/parent
+//     variable-name clash (and hence remove the warning)
+
+//////////////////////////////////////////////////////////////////////////////
+// Constants
+OFFSET_MAIN = 10
+OFFSET_FUNC = 100
+
+//////////////////////////////////////////////////////////////////////////////
+// Declare globals for functions
+// I was attempting to write this (as an experiment):
+//      bar 0: i | constant in main | constant in func
+//      bar 1: i | constant in main | changed in func
+//      bar 2: i | changed in main  | constant in func
+//      bar 3: i | changed in main  | changed in func
+i = 1               // Global variable
+if array.includes(array.from(2, 3), bar_index)
+    i += OFFSET_MAIN
+
+//////////////////////////////////////////////////////////////////////////////
+// Functions
+showMsg(string msg, int val) =>
+    if bar_index <= 3
+        log.info("{0,number,0} | {1} [via showMsg()]", val, msg)
+
+updateVar() =>
+    if array.includes(array.from(1, 3), bar_index)
+        // i += OFFSET_FUNC    // Error at ... Cannot modify global variable 'i' in function
+        i = OFFSET_FUNC     // Warning at ... Shadowing variable 'i' which exists in parent
+                            //   scope. Did you want to use the ':=' operator instead of '=' ?
+        // i := OFFSET_FUNC    // Error at ... Cannot modify global variable 'i' in function
+        showMsg("updateVar() if-block", i)            // OFFSET_FUNC above IS displayed
+
+    showMsg("updateVar() parent-block", i)            // OFFSET_FUNC above is NOT displayed
+
+//////////////////////////////////////////////////////////////////////////////
+// Main
+if bar_index <= 4
+    log.info("#####")
+showMsg("within Main", i)
+updateVar()
+showMsg("within Main", i)
+

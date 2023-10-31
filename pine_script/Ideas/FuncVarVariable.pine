@@ -1,0 +1,43 @@
+//@version=5
+indicator("FunctionVarVariable", shorttitle = "FuncVarVar")
+
+// AIM
+// I want to understand how var-variables behave within a function.
+// I cannot see this addressed within the official Pine Script doco.
+//
+// LESSON
+// Difficult to learn any lessons here except perhaps "don't use
+// local var-variables within a function"?
+
+//////////////////////////////////////////////////////////////////////////////
+DEBUG = true
+
+//////////////////////////////////////////////////////////////////////////////
+// Functions
+persistentLocalCounter(msg="") =>
+    var countHowMany = 0    // Declaration on bar 0 only (whether or not we invoke this function on bar 0)?
+    incr = if DEBUG
+        if msg == "333"
+            3
+        else if msg == "222"
+            2
+        else
+            1
+        
+    else                    // Not DEBUG implies "increment by 1"
+        1
+
+    countHowMany += incr    // Seems to have 3 copies of local "var countHowMany". Why? Undocumented?
+                            // I.e. one copy for each time-per-bar we invoke this function from Main.
+    log.info("{0} | bar_index: {1,number,0} | countHowMany = {2,number,0}", msg, bar_index, countHowMany)
+
+//////////////////////////////////////////////////////////////////////////////
+// Main
+if bar_index > 0 and bar_index < 5
+    msg1 = DEBUG ? "111" : ""
+    msg2 = DEBUG ? "222" : ""
+    msg3 = DEBUG ? "333" : ""
+    persistentLocalCounter(msg1)
+    persistentLocalCounter(msg2)
+    persistentLocalCounter(msg3)
+
