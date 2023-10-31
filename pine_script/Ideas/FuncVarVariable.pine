@@ -15,6 +15,7 @@ indicator("FunctionVarVariable", shorttitle = "FuncVarVar")
 
 //////////////////////////////////////////////////////////////////////////////
 DEBUG = true
+IS_USE_FUNCTION_WRAPPER = true
 
 //////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -33,12 +34,21 @@ persistentLocalCounter(msg="") =>
 
     countHowMany += incr    // Seems to have 3 copies of local "var countHowMany". Why? Undocumented?
                             // I.e. one copy for each time-per-bar we invoke this function from Main.
-    log.info("{0} | bar_index: {1,number,0} | countHowMany = {2,number,0}", msg, bar_index, countHowMany)
+    log.info("{0} | bar_index: {1,number,0} | countHowMany: {2,number,0}", msg, bar_index, countHowMany)
+
+persistentLocalCounterWrapper(msg="") =>
+    persistentLocalCounter(msg)    // This call will have its own local var variable? Appears not!
 
 //////////////////////////////////////////////////////////////////////////////
 // Main
 if bar_index > 0 and bar_index < 5
-    persistentLocalCounter(DEBUG ? "111" : "")
-    persistentLocalCounter(DEBUG ? "222" : "")
-    persistentLocalCounter(DEBUG ? "333" : "")
+    if IS_USE_FUNCTION_WRAPPER
+        persistentLocalCounterWrapper(DEBUG ? "111" : "")
+        // persistentLocalCounterWrapper(DEBUG ? "222" : "")
+        persistentLocalCounterWrapper(DEBUG ? "333" : "")
+
+    else
+        persistentLocalCounter(DEBUG ? "111" : "")  // This call will have its own local var variable
+        persistentLocalCounter(DEBUG ? "222" : "")  // This call will have its own local var variable
+        persistentLocalCounter(DEBUG ? "333" : "")  // This call will have its own local var variable
 
