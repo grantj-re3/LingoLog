@@ -39,6 +39,9 @@
    - [Edit your Pine code on a separate page | 2021](https://www.tradingview.com/blog/en/edit-your-pine-code-on-a-separate-page-28522/)
      * The Pine editor can be in a separate window or tab
 
+1. [TradingView | Pine Script: Community SCRIPTS](https://www.tradingview.com/scripts/)
+   - [robbatt | lib_statemachine | 2022](https://www.tradingview.com/script/jVX7YbB6-lib-statemachine/)
+
 
 ## Info from other sources (not TradingView)
 
@@ -60,6 +63,8 @@
 1. [PineCoders | Home page](https://www.pinecoders.com/)
    - [Learning Pine Script Roadmap](https://www.pinecoders.com/learning_pine_roadmap/)
    - [FAQ & Code](https://www.pinecoders.com/faq_and_code/)
+     * Shows several examples of *var* declarations inside a function
+       + [How can I rescale an indicator from one scale to another?](https://www.pinecoders.com/faq_and_code/#how-can-i-rescale-an-indicator-from-one-scale-to-another) contains *var* declarations inside a function *and* the function is invoked more than once
    - [Pine Script Resources](https://www.pinecoders.com/resources/)
 
 1. [Reddit | TradingView subreddit forum](https://www.reddit.com/r/TradingView/)
@@ -74,9 +79,15 @@
        says: *Scripts can also assign maps to global variables and interact with them from the scopes of functions, methods, and
        conditional structures*
 
+1. [GitHub | Topic: pinescript](https://github.com/topics/pinescript)
+   - [geraked / tradingview](https://github.com/geraked/tradingview)
+
 1. [kaigouthro | Pine Script 5 Mini Reference | 2023](https://gist.github.com/kaigouthro/b95a8b4c43e607ea71897e204904b9c0)
    - Unofficial, but appears to be fairly complete and regularly updated
    - All the info is on one page, so excellent for searching
+
+1. [Simple Crypto Life | Get help with Pinescript | 2020](https://simplecrypto.life/get-help-with-pinescript/)
+
 
 ## Useful details
 
