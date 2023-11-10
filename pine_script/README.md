@@ -105,8 +105,8 @@
    - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
    - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
 
-1. [TradingView | How To Chart Fundamental Metrics: Full Tutorial (video) | 2023]](https://www.youtube.com/watch?v=XQqhpYwkt3A)
-   - [10m53s Pine script section](https://www.youtube.com/watch?v=XQqhpYwkt3A&t=10m53s)
+1. [TradingView | How To Chart Fundamental Metrics: Full Tutorial (video) | 2023](https://www.youtube.com/watch?v=XQqhpYwkt3A)
+   - [[10m53s] Pine script section](https://www.youtube.com/watch?v=XQqhpYwkt3A&t=10m53s)
 
 
 ### Language statements
