@@ -65,6 +65,7 @@
    - [FAQ & Code](https://www.pinecoders.com/faq_and_code/)
      * Shows several examples of *var* declarations inside a function
        + [How can I rescale an indicator from one scale to another?](https://www.pinecoders.com/faq_and_code/#how-can-i-rescale-an-indicator-from-one-scale-to-another) contains *var* declarations inside a function *and* the function is invoked more than once
+     * [How can I optimize Pine code?](https://www.pinecoders.com/faq_and_code/#how-can-i-optimize-pine-code)
    - [Pine Script Resources](https://www.pinecoders.com/resources/)
 
 1. [Reddit | TradingView subreddit forum](https://www.reddit.com/r/TradingView/)
@@ -103,6 +104,9 @@
    - [Style guide](https://www.tradingview.com/pine-script-docs/en/v5/writing/Style_guide.html)
    - [Debugging](https://www.tradingview.com/pine-script-docs/en/v5/writing/Debugging.html)
    - [Limitations](https://www.tradingview.com/pine-script-docs/en/v5/writing/Limitations.html)
+
+1. [TradingView | How To Chart Fundamental Metrics: Full Tutorial (video) | 2023]](https://www.youtube.com/watch?v=XQqhpYwkt3A)
+   - [10m53s Pine script section](https://www.youtube.com/watch?v=XQqhpYwkt3A&t=10m53s)
 
 
 ### Language statements
