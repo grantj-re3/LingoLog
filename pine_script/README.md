@@ -143,6 +143,13 @@
      * labels
    - [TradingView | Plotting shapes, chars and arrows](https://www.tradingview.com/pine-script-docs/en/v4/annotations/Plotting_shapes_chars_and_arrows.html)
    - [TradingView | Plots](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Plots.html)
+1. Lines and boxes
+   - [TradingView | Lines and boxes](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Lines_and_boxes.html)
+     * Lines
+     * Boxes
+     * Polylines
+     * Realtime behavior
+     * Limitations
 
 
 ### Time and time zones
