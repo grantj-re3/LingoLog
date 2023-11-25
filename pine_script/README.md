@@ -108,6 +108,34 @@
 1. [TradingView | How To Chart Fundamental Metrics: Full Tutorial (video) | 2023](https://www.youtube.com/watch?v=XQqhpYwkt3A)
    - [[10m53s] Pine script section](https://www.youtube.com/watch?v=XQqhpYwkt3A&t=10m53s)
 
+1. Apply an indicator or strategy to another indicator
+   - This feature allows a plot from an indicator or strategy to be an external input
+     to another indicator.
+   - If both indicators are the same script, then you can imagine it as allowing a plot
+     from a child-indicator script to be an external input to a parent-indicator script.
+   - [TradingView | How do I apply an indicator or strategy to another indicator? | c.2016](https://www.tradingview.com/support/solutions/43000474048-how-do-i-apply-an-indicator-or-strategy-to-another-indicator/)
+   - [TradingCode | How to calculate a TradingView indicator on another indicator? | c.2018](https://www.tradingcode.net/tradingview/apply-indicator/)
+     * We can only apply an indicator to data plotted by another indicator (with the plot()
+       function). We don’t get access to other indicator output or values inside that indicator.
+     * If the indicators are already on the chart, we use the third approach: configure
+       which indicator plot an indicator calculates on through its input options.
+   - [TradingView | New feature – apply an indicator to another indicator | 2016](https://www.tradingview.com/blog/en/new-feature-8211-apply-an-indicator-to-another-indicator-1844/)
+     * Method 3 says ...
+     * Add a new indicator from the list, go to Format, open the Source list: and
+       finally select the source of the other indicator.
+     * This functionality also *works on user-generated Pine scripts*, but you need
+       to add input(type=source).
+     * *After the [external or child] indicator is added to the chart*, you’ll see
+       the ability to add another indicator in the Source list.
+     * Not all indicators can be calculated based on another indicator due to various
+       technical nuances. So, *only ones that work are shown in the indicator list*.
+   - [TradingView | Pine Script language reference manual: input.source() ](https://www.tradingview.com/pine-script-reference/v5/#fun_input{dot}source)
+     * The default value *defval* argument must be 1 of the 8 built-in variables listed
+     * input.source() always returns a type of *series float*
+     * Note that input.float() also allows you to select an indicator-plot as a source
+       provided that the *defval* argument is 1 of the 8 built-in variables listed for
+       the input.source() function
+
 
 ### Language statements
 
