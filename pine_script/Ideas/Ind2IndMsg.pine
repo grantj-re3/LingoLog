@@ -1,0 +1,161 @@
+//@version=5
+indicator("Child-ind to parent-ind message", shorttitle = "Ind2IndMsg", overlay = true) // max_bars_back = 10 ???
+
+//////////////////////////////////////////////////////////////////////////////
+// CHILD-INDICATOR BEHAVIOUR
+// Send a text message to the parent-indicator via a plot as follows:
+// - Get a message from input, inSendMsg (e.g. "Hi")
+// - Convert it to a list of chars, [H, i]
+// - Convert it to a list of int (similar to ASCII), [41, 74]
+// - Plot a list of arbitary numbers (floats) for every bar except for the
+//   last 3 bars on the chart. For the last 3 bars, plot the values:
+//     [41, 74, 2]
+//   where:
+//   - [41, 74] are the values on the [last bar - 2, last bar - 1] and represent
+//     the characters [H, i]
+//   - 2 is the value on the last bar and represents the message length (in characters)
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+BASE_OFFSET = 1e7
+
+//////////////////////////////////////////////////////////////////////////////
+// INPUTS
+//////////////////////////////////////////////////////////////////////////////
+inLocalMsg = input.string("Local msg #1",   title="Message to appear in local indicator", group="Messages")
+inSendMsg  = input.string("Msg to send #1", title="Message to send to parent indicator",  group="Messages")
+
+inChildIndicatorPlot1 = input.source(close, title="Child 1: Plot With Encoded Msg", group = "Select Ind2IndMsg child indicators")
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert int-to-alpha-char by looking up via an array index.
+// The character set is:  Newline + ASCII printable chars.
+// We must escape: newline (\n), double quote (\") and backslash (\\).
+var CHARSET = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n !\"#$%&'()*+,-./0123456789:;<=>?"
+// var CHARSET = "\n !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+var string[] INT2ALPHA = str.split(CHARSET, "")     // An array, each element is 1 char
+
+//////////////////////////////////////////////////////////////////////////////
+arrayToInvertedMap(string[] arrayToInvert) =>
+    // For example:
+    // Arg: arrayToInvert = ["a", "b", "c"]
+    // Returns: map of ["a" => 0, "b" => 1, "c" => 2]
+    m = map.new<string, int>()
+    for [i, ch] in arrayToInvert
+        m.put(ch, i)
+    m
+
+//////////////////////////////////////////////////////////////////////////////
+// Inverse of INT2ALPHA. Convert alpha-char-to-int by looking up via a map key.
+var ALPHA2INT = arrayToInvertedMap(INT2ALPHA)
+
+//////////////////////////////////////////////////////////////////////////////
+type messageUdt
+    string str
+    int[] intList
+
+//////////////////////////////////////////////////////////////////////////////
+// A messageUdt constructor
+messageUdt_new(string s) =>
+    chList = str.split(s, "")       // An array of chars representing the message
+    log.warning("array chList: {0}", chList)
+
+    // Create an array of ints representing the above chars
+    intList = array.new_int(0)
+    for ch in chList
+        intList.push( ALPHA2INT.get(ch) )
+    log.warning("array ints: {0}", intList)
+    messageUdt.new(s, intList)      // Return the new object
+
+//////////////////////////////////////////////////////////////////////////////
+method isMessageBarIndexRegion(messageUdt msg) =>
+    (last_bar_index - bar_index) <= msg.intList.size()
+
+//////////////////////////////////////////////////////////////////////////////
+method plotValueWithEncodedMsg(messageUdt msg) =>
+    // FIXME: Check msg will fit within bars available
+    int val = if msg.isMessageBarIndexRegion()
+        if bar_index == last_bar_index
+            msg.intList.size()              // Message size is given on the last bar
+        else
+            msgIndex = msg.intList.size() - (last_bar_index - bar_index)
+            msg.intList.get(msgIndex)       // Int representing a char given on the bars leading up to the last bar
+    else
+        0                                   // No infomation given (until we near the end of the chart)
+
+    // Return a float with a large negative offset so it cannot be confused with
+    // built-in input sources (like open or close) when received by the parent indicator.
+    -(BASE_OFFSET + val)
+
+//////////////////////////////////////////////////////////////////////////////
+plotToIndex(float plotVal) =>
+    plotVal > -BASE_OFFSET ? na : int(math.abs(int(plotVal) + BASE_OFFSET))
+
+//////////////////////////////////////////////////////////////////////////////
+method logPlotValue(messageUdt msg, float plotVal) =>
+    if msg.isMessageBarIndexRegion()
+        idx = plotToIndex(plotVal)
+        log.info("SentFromChildInd | lastBar: {0} | barIndex: {1} | plotVal: {2} | idx: {3} | char: \"{4}\" | {5} | {6}", 
+          last_bar_index, bar_index, plotVal, idx,
+          INT2ALPHA.get( int(idx) ), msg.intList.size(), msg.str)
+
+//////////////////////////////////////////////////////////////////////////////
+// decodeChildIndMsg(float encodedPlot1) =>
+//     log.info("encodedPlot1: {0,number,0.00}", encodedPlot1)
+//     msgSize = plotToIndex(encodedPlot1)
+//     if msgSize < 0 or msgSize > 3
+//         msgSize := 3
+//     // ai = array.new_int(0)
+//     a = array.new_string(0)
+//     for i = 0 to (msgSize - 1)
+//         hist = msgSize - i
+//         idx = plotToIndex(encodedPlot1[hist])
+//         ch = INT2ALPHA.get(idx)
+//         // ai.push(plotToIndex(idx))
+//         a.push(ch)
+//     a.join("")
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+var msg = messageUdt_new(inSendMsg)
+
+// BEWARE: If we use islastconfirmedhistory below (instead of islast) while
+// a trading session is open, then:
+// - the realtime bar will be the last bar
+// - the islastconfirmedhistory bar will be the second last bar
+// - the result will be that inChildIndicatorPlot1[0] below will read the int
+//   representing the *last char of the message* (but interpret it as msgSize)
+if barstate.islast
+    sChildMsg = "NOT-OUR-INDICATOR-SOURCE?"     // Assume the message is invalid (due to a non-indicator source)
+    msgSize = plotToIndex(inChildIndicatorPlot1)
+    if not na(msgSize)
+        chList = array.new_string(0)    // Use an array to build the child-msg-string
+
+        for i = 0 to (msgSize - 1)
+            hist = msgSize - i
+            idx = plotToIndex(inChildIndicatorPlot1[hist])
+            ch = INT2ALPHA.get(idx)
+            log.info("DEBUG2: hist:{0,number,0}|idx:{1,number,0}|ch:{2}", hist, idx, ch)
+            chList.push(ch)
+        sChildMsg := chList.join("")
+
+    aLabel = array.new_string(0)    // Use an array to build the label-string
+    aLabel.push(str.format("Local msg:\n{0}\n", inLocalMsg))
+    aLabel.push(str.format("Message to send to parent-indicator:\n{0}\n", inSendMsg))
+    aLabel.push(str.format("Message received from child-indicator:\n{0}", sChildMsg))
+    if not na(msgSize)
+        aLabel.push(str.format("msgSize: {0}", msgSize))
+
+    sLabel = aLabel.join("\n")
+    label.new(bar_index +10, close, text=sLabel, style = label.style_label_left, color=color.green)
+
+//////////////////////////////////////////////////////////////////////////////
+// PLOTS
+//////////////////////////////////////////////////////////////////////////////
+plotVal = msg.plotValueWithEncodedMsg()
+plot(plotVal, title = "Plot With Encoded Msg", display = (display.all - display.pane))
+
+msg.logPlotValue(plotVal)
+
