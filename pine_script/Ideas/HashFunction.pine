@@ -1,0 +1,78 @@
+//@version=5
+indicator("djb2 Hash Function", shorttitle = "djb2Hash", overlay = true) // max_bars_back = 10 ???
+
+//////////////////////////////////////////////////////////////////////////////
+var BASE64_STR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+var string[] INT2BASE64 = str.split(BASE64_STR, "")
+
+//////////////////////////////////////////////////////////////////////////////
+intToBase64(int iValue, int numBits=32) =>
+    numGroups = math.ceil(numBits / 6.0)
+    _iValue = iValue
+    strList = array.new_string(0)
+    for i = 1 to numGroups
+        remain = _iValue % 64
+        strList.push( INT2BASE64.get(remain) )
+        _iValue /= 64
+    strList.reverse()
+    strList.join("")
+
+//////////////////////////////////////////////////////////////////////////////
+// Convert int-to-alpha-char by looking up via an array index.
+// The character set is:  Newline + ASCII printable chars.
+// We must escape: newline (\n), double quote (\") and backslash (\\).
+var CHARSET = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n"
+var string[] INT2ALPHA = str.split(CHARSET, "")     // An array, each element is 1 char
+
+// Array INT2ALPHA index + ASCII_OFFSET gives ASCII values for all *printable* chars (but not '\n')
+ASCII_OFFSET = 32
+HASH_NUM_BUCKETS = 4294967296   // Same as C-language "unsigned long", i.e. 2^32
+
+//////////////////////////////////////////////////////////////////////////////
+arrayToInvertedMap(string[] arrayToInvert) =>
+    // For example:
+    // Arg: arrayToInvert = ["a", "b", "c"]
+    // Returns: map of ["a" => 0, "b" => 1, "c" => 2]
+    m = map.new<string, int>()
+    for [i, ch] in arrayToInvert
+        m.put(ch, i)
+    m
+
+//////////////////////////////////////////////////////////////////////////////
+// Inverse of INT2ALPHA. Convert alpha-char-to-int by looking up via a map key.
+var ALPHA2INT = arrayToInvertedMap(INT2ALPHA)
+
+//////////////////////////////////////////////////////////////////////////////
+ascii2int(string ch) =>
+    // The offset makes all *printable* chars (but not '\n') the same as ASCII
+    ALPHA2INT.get(ch) + ASCII_OFFSET
+
+//////////////////////////////////////////////////////////////////////////////
+// The djb2 hash function (by Daniel J. Bernstein)
+// - https://theartincode.stanis.me/008-djb2/
+// - https://gist.github.com/MohamedTaha98/ccdf734f13299efb73ff0b12f7ce429f
+hashFunction(string msg) =>
+    int hash = 5381
+    for ch in str.split(msg, "")    // Iterate thru each char in the msg
+        hash := ( hash * 33 + ascii2int(ch) ) % HASH_NUM_BUCKETS
+    hash
+
+//////////////////////////////////////////////////////////////////////////////
+hashFunctionBase64(string msg, int numBits=32) =>
+    h = hashFunction(msg)
+    intToBase64(h, numBits)
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+if barstate.islastconfirmedhistory
+    testMessages = array.from(
+      "Hello world!",
+      "Hello worlds!",
+      "0123456789 The quick brown fox jumps over the lazy dog",
+      "0123456789 The quick brown fox jumps over the lazy dot",
+      "Bye"
+      )
+    for msg in testMessages
+        log.info("Hash: {0} | Hash64: {1} | Message: {2}", hashFunction(msg), hashFunctionBase64(msg), msg)
+
