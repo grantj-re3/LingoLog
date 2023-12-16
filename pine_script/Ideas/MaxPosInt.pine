@@ -1,0 +1,47 @@
+//@version=5
+indicator("Maximum Positive Integer", shorttitle = "MaxPosInt", overlay = true)
+
+//////////////////////////////////////////////////////////////////////////////
+// Conclusion: 
+// The maximum positive integer appears to be (2^53) - 1.
+// The maximum negative integer is probably -(2^53).
+
+//////////////////////////////////////////////////////////////////////////////
+// math.pow() returns a float, so I've written my own
+power(int base, int exp) =>
+    if exp == 0
+        1
+    else
+        i = 1
+        int prod = base
+        while i < exp
+            prod *= base
+            i += 1
+        prod
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+int _power = na
+base = 2
+if barstate.islastconfirmedhistory
+    // 2^32 = 4,294,967,296             // Ok
+    // 2^48 = 281,474,976,710,656       // Ok
+    // 2^57 = 144,115,188,075,855,872   // Ok
+    // 2^58 = 288,230,376,151,711,744   // Wrong: pine script ends with 740
+    for exp = 0 to 58
+        _power := power(base, exp)
+        log.info("base: {0} | exp: {1} | result: {2}", base, exp, _power)
+
+    maxExp = 53         // Integers work accurately to 2^53
+    max = power(2, maxExp)
+    // Confirm that subtraction below the max is accurate
+    for i = 0 to 4
+        num = 5 - i
+        log.info("max - {0}: {1} -- OK", num, max-num)
+    log.info("**MAX**: {0} -- OK", max)
+    // Confirm that addition above the max is suspect!
+    for i = 0 to 4
+        num = 1 + i
+        log.info("max + {0}: {1} -- SUS", num, max+num)
+
