@@ -1,0 +1,139 @@
+//@version=5
+indicator("FakeStockData", shorttitle = "FakeStk", overlay = true)
+
+//////////////////////////////////////////////////////////////////////////////
+// PURPOSE
+// This script demonstrates that we can:
+// - Create our own custom/fake OHLC stock data (see getTodaysCustomOhlc())
+// - Plot it to the chart with an OHLC-bar via plotbar() (or a candle via plotcandle())
+// - Perform technical analysis functions on our custom data, e.g. ta.sma()
+// - Plot those technical analysis functions
+//
+// We might use this to *test our scripts* against specific chart scenarios
+// (which otherwise may be difficult to find within real stock).
+//
+// ASIDE
+// We have also included functions:
+// - harvestTodaysChartOhlc() which can harvest OHLC data between 2 dates
+// - writeChartOhlcToLog() which can write the harvested OHLC data to the log
+//   in a format suitable for pasting into getTodaysCustomOhlc()
+//
+// This allows us to harvest excerpts of real stock OHLC data and use it to
+// test our scripts.
+
+//////////////////////////////////////////////////////////////////////////////
+// INPUTS
+//////////////////////////////////////////////////////////////////////////////
+TIMEZONE = "GMT-5"      // Stock Exchange timezone (e.g. "GMT-5" for New York)
+inStartDate = input.time(timestamp("15 Jun 2022 00:00 " + TIMEZONE), title = "Start date", group = "Harvest OHLC chart-data between these dates")
+inEndDate   = input.time(timestamp("15 Aug 2022 00:00 " + TIMEZONE), title = "End date",   group = "Harvest OHLC chart-data between these dates")
+
+//////////////////////////////////////////////////////////////////////////////
+// USER DEFINED TYPES / OBJECTS
+//////////////////////////////////////////////////////////////////////////////
+type ohlcUdt
+    float _open
+    float _high
+    float _low
+    float _close
+
+//////////////////////////////////////////////////////////////////////////////
+type harvestDateUdt
+    int start
+    int end
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS & METHODS
+//////////////////////////////////////////////////////////////////////////////
+method harvestTodaysChartOhlc(ohlcUdt[] ohlcList, harvestDateUdt harvestDate=na) =>
+    if time > inStartDate and time < inEndDate
+        ohlcList.push(ohlcUdt.new(open, high, low, close))
+
+        if not na(harvestDate)
+            harvestDate.end := time         // Keep overwriting the end-date
+            if na(harvestDate.start)        // Assign the start-date the first-time only
+                harvestDate.start := time
+
+//////////////////////////////////////////////////////////////////////////////
+method writeChartOhlcToLog(ohlcUdt[] ohlcList, harvestDateUdt harvestDate=na) =>
+    lines       = array.new_string(0)   // Lines of text which will be written to the log
+
+    openList    = array.new_string(0)   // String versions of our OHLC data
+    highList    = array.new_string(0)
+    lowList     = array.new_string(0)
+    closeList   = array.new_string(0)
+
+    stockSym = ticker.standard(syminfo.tickerid)
+    lines.push(str.format("OHLC data below was harvested...\nfrom {0}", stockSym))
+
+    if not na(harvestDate)
+        if not na(harvestDate.start) and not na(harvestDate.end)
+            lines.push(str.format("between {0,date,yyyy-MM-dd} & {1,date,yyyy-MM-dd} inclusive.", harvestDate.start, harvestDate.end))
+    lines.push("Its format is suitable for pasting into getTodaysCustomOhlc().")
+
+    for ohlc in ohlcList
+        openList.push( str.format("{0,number,0.00}", ohlc._open))
+        highList.push( str.format("{0,number,0.00}", ohlc._high))
+        lowList.push(  str.format("{0,number,0.00}", ohlc._low))
+        closeList.push(str.format("{0,number,0.00}", ohlc._close))
+
+    lines.push(str.format("openList  = array.from({0})", openList.join(", ")))
+    lines.push(str.format("highList  = array.from({0})", highList.join(", ")))
+    lines.push(str.format("lowList   = array.from({0})", lowList.join(", ")))
+    lines.push(str.format("closeList = array.from({0})", closeList.join(", ")))
+    log.info(lines.join("\n"))
+
+//////////////////////////////////////////////////////////////////////////////
+getTodaysCustomOhlc() =>
+    // FIXME: Verify that:
+    // - Arrays are of the same length
+    // - The array length will fit into the number of bars available for this stock's chart
+    openList = array.from(
+      24.06, 22.99, 22.07, 23.82, 23.71, 24.94, 26.11, 28.35, 27.46, 24.78, 24.06, 23.60, 23.41, 25.77, 26.38, 26.99, 27.20, 26.44, 23.84, 24.46, 
+      26.27, 27.61, 27.15, 28.66, 30.01, 30.88, 29.53, 28.49, 28.60, 30.68, 32.13, 32.78, 32.54, 33.55, 35.69, 34.43, 35.60, 34.28, 36.13, 37.33, 36.60)
+    highList = array.from(
+      25.92, 23.12, 23.28, 24.98, 25.45, 25.57, 28.04, 28.50, 28.21, 25.29, 24.89, 24.50, 25.68, 26.72, 28.00, 28.31, 27.27, 26.98, 25.83, 25.68, 
+      26.85, 28.00, 28.62, 30.25, 31.18, 31.53, 29.67, 28.57, 31.25, 31.82, 33.65, 34.42, 34.35, 35.95, 36.27, 35.98, 36.83, 34.37, 36.64, 38.02, 38.05)
+    lowList = array.from(
+      23.34, 21.32, 21.65, 23.78, 23.55, 24.17, 26.05, 27.00, 24.76, 24.10, 22.75, 23.10, 23.00, 25.28, 26.37, 26.71, 25.86, 24.91, 23.69, 23.62, 
+      25.81, 25.82, 26.69, 28.44, 29.22, 28.95, 28.41, 27.05, 28.43, 29.52, 31.67, 32.44, 32.21, 33.31, 34.96, 34.15, 34.44, 33.19, 35.31, 35.67, 36.23)
+    closeList = array.from(
+      24.90, 21.86, 22.67, 24.38, 24.29, 25.33, 27.98, 27.32, 24.83, 24.88, 24.00, 24.39, 25.65, 26.14, 27.76, 27.89, 26.11, 25.35, 25.19, 25.45, 
+      26.79, 26.17, 28.46, 29.89, 31.16, 29.53, 29.09, 27.33, 30.74, 31.62, 33.36, 33.31, 33.00, 35.64, 36.15, 35.29, 34.93, 33.73, 36.50, 35.95, 37.98)
+
+    // Example: IF array size is 10 and last_bar_index is 100, THEN
+    // - bar_index range = 0..100
+    // - (last_bar_index - openList.size() + 1) = 91
+    // - index range = (bar_index range - 91) = -91..9
+    // - IF index is 0..9 THEN we will use OHLC data from the arrays above
+    // - ELSE IF index is -91..-1 THEN we will use the FIRST element of OHLC data from the arrays above
+    index = bar_index - (last_bar_index - openList.size() + 1)
+    if index < 0            // Return the first array element
+        [openList.get(0), highList.get(0), lowList.get(0), closeList.get(0)]
+    else                    // Return the indexed array element
+        [openList.get(index), highList.get(index), lowList.get(index), closeList.get(index)]
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN - Section 1
+//////////////////////////////////////////////////////////////////////////////
+// Get today's custom OHLC data. Plot the custom OHLC-bar.
+[_open, _high, _low, _close] = getTodaysCustomOhlc()
+plotbar(_open, _high, _low, _close)
+
+// Technical analysis plots based on our custom data
+plot(ta.sma(_high, 5),  color = color.green)
+plot(ta.sma(_low, 5),   color = color.red)
+plot(ta.sma(_close, 5), color = color.orange)
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN - Section 2
+//////////////////////////////////////////////////////////////////////////////
+// Harvest some chart data
+var ohlcList = array.new<ohlcUdt>(0)     // An empty array of OHLC-records
+var harvestDate = harvestDateUdt.new()
+ohlcList.harvestTodaysChartOhlc(harvestDate)
+
+if barstate.islast
+    // Write the harvested-chart-data to the log
+    ohlcList.writeChartOhlcToLog(harvestDate)
+
