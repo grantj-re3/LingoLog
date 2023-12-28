@@ -182,6 +182,13 @@
      * Polylines
      * Realtime behavior
      * Limitations
+1. Libraries
+   - [TradingView | Libraries](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Libraries.html)
+   - [TradingView | Private invite-only scripts](https://www.tradingview.com/support/solutions/43000615189-private-invite-only-scripts/)
+     * Private invite-only scripts can only be published by Premium accounts.
+     * You can tell that a script is private from the small "lock" icon that appears to the right of its name.
+   - [Stack Overflow | How do you access the Pine Script Code Behind a public Indicator in TradingView? | 2019](https://stackoverflow.com/questions/55203366/how-do-you-access-the-pine-script-code-behind-a-public-indicator-in-tradingview)
+     * Protected: No one can see the source code but everyone can apply it to a chart.
 
 
 ### Time and time zones
