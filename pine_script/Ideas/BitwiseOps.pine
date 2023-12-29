@@ -1,0 +1,130 @@
+//@version=5
+indicator("BitwiseOperations", shorttitle = "BitwiseOps", overlay = true)
+
+//////////////////////////////////////////////////////////////////////////////
+// PURPOSE
+// To implement bitwise AND, OR, XOR & NOT.
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+BITWISE_OP_AND = 0
+BITWISE_OP_XOR = 1
+BITWISE_OP_OR  = 2
+BITWISE_OP_NOT = 3
+
+BITWISE_OP_NAME = array.from("AND", "XOR", "OR", "NOT")
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS
+//////////////////////////////////////////////////////////////////////////////
+// The 1Bit functions below assume variables a & b can only take the values 0 or 1.
+and1Bit(int a, int b) =>
+    (a * b) % 2
+
+//////////////////////////////////////////////////////////////////////////////
+xor1Bit(int a, int b) =>
+    (a + b) % 2
+
+//////////////////////////////////////////////////////////////////////////////
+or1Bit(int a, int b) =>
+    // Same as:  (a XOR b) XOR (a AND b)
+    (a + b + a * b) % 2
+
+//////////////////////////////////////////////////////////////////////////////
+not1Bit(int a) =>
+    (a + 1) % 2
+
+//////////////////////////////////////////////////////////////////////////////
+bitwiseOp(int a, int b, int opSelector, int numBits=32) =>
+    _a = a
+    _b = b
+    result = 0
+    multPower2 = 1
+    for i = 0 to numBits-1
+        result1Bit = switch opSelector
+            BITWISE_OP_AND => and1Bit(_a % 2, _b % 2)
+            BITWISE_OP_XOR => xor1Bit(_a % 2, _b % 2)
+            BITWISE_OP_OR  => or1Bit( _a % 2, _b % 2)
+            BITWISE_OP_NOT => not1Bit(_a % 2)   // Ignore b
+            =>
+                log.error("Unrecognised bitwise-op {0}", opSelector)
+                1
+        result += result1Bit * multPower2
+        multPower2 *= 2
+        _a := int(_a / 2)
+        _b := int(_b / 2)
+    result
+
+//////////////////////////////////////////////////////////////////////////////
+bitwiseAnd(int a, int b, int numBits=32) =>
+    bitwiseOp(a, b, BITWISE_OP_AND, numBits)
+
+//////////////////////////////////////////////////////////////////////////////
+bitwiseXor(int a, int b, int numBits=32) =>
+    bitwiseOp(a, b, BITWISE_OP_XOR, numBits)
+
+//////////////////////////////////////////////////////////////////////////////
+bitwiseOr(int a, int b, int numBits=32) =>
+    bitwiseOp(a, b, BITWISE_OP_OR, numBits)
+
+//////////////////////////////////////////////////////////////////////////////
+bitwiseNot(int a, int numBits=32) =>
+    bitwiseOp(a, 0, BITWISE_OP_NOT, numBits)
+
+//////////////////////////////////////////////////////////////////////////////
+intToBinaryString(int a, int numBits=32, int numBitsPerGroup=4, string groupSep="_") =>
+    bits = array.new_string(0)
+    _a = a
+    for i = 0 to numBits-1
+        if (i % numBitsPerGroup) == 0 and i > 0
+            bits.push(groupSep)
+        bits.push(str.tostring(_a % 2))
+        _a := int(_a / 2)
+    array.reverse(bits)
+    bits.join("")
+
+//////////////////////////////////////////////////////////////////////////////
+intToBinaryString2(int a, int numBits=32, int numBitsPerGroup=4, string groupSep="_") =>
+    // Format: binary-string + (decimal-string). E.g. "1111_1100(252)"
+    str.format("{0}({1,number,0})", intToBinaryString(a, numBits, numBitsPerGroup, groupSep), a)
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+if barstate.islast
+    // Verify that binary strings are created properly
+    for i in array.from(
+      0,1,2,3,4,5,6,7,
+      8,9,10,11,12,13,14,15,
+      16,32,64,128,
+      248,249,250,251,252,253,254,255)
+        log.info("{0}", intToBinaryString2(i, 8))
+
+    // Verify that each of the bitwise operations work correctly. Use bitwiseOp() function.
+    numBits = 4
+    for [op, opName] in BITWISE_OP_NAME
+        log.info("===== BITWISE {0} =====", opName)
+        for a = 0 to 3
+            for b = 0 to 3
+                r = bitwiseOp(a, b, op, numBits)
+                log.info("{0} {1} {2} = {3}", 
+                  intToBinaryString2(a, numBits),
+                  opName,
+                  intToBinaryString2(b, numBits),
+                  intToBinaryString2(r, numBits)
+                  )
+
+    // Verify functions: bitwiseAnd(), bitwiseXor(), bitwiseOr(), bitwiseNot().
+    numBits := 8
+    b = 228
+    for a in array.from(228, 147, 78, 57)
+        log.info("a: {0} | b: {1} | AND: {2} | XOR: {3} | OR: {4} | NOT a: {5}", 
+          intToBinaryString2(a, numBits), 
+          intToBinaryString2(b, numBits),
+          intToBinaryString2(bitwiseAnd(a, b, numBits), numBits),
+          intToBinaryString2(bitwiseXor(a, b, numBits), numBits),
+          intToBinaryString2(bitwiseOr(a, b, numBits), numBits),
+          intToBinaryString2(bitwiseNot(a, numBits), numBits)
+          )
+
