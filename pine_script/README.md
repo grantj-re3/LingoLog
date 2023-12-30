@@ -150,6 +150,24 @@
      * Users can access methods using dot notation on variables directly
      * E.g. *id.get(index)* instead of *array.get(id, index)* if *id* is an array
      * This notation is also available for user-defined types using the *method* keyword
+   - TradingView | Alerts and runtime error messages
+     * [runtime.error()](https://www.tradingview.com/pine-script-reference/v5/#fun_runtime.error) :
+       ... causes a runtime error with the error message specified
+     * [alert()](https://www.tradingview.com/pine-script-reference/v5/#fun_alert) :
+       Creates an alert event when called during the real-time bar
+     * [alertcondition()](https://www.tradingview.com/pine-script-reference/v5/#fun_alertcondition) :
+       ... does NOT create an alert, it just gives you more options in Create Alert dialog.
+   - TradingView | Request functions
+     * [request.security()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.security) :
+       Requests data from another symbol and/or timeframe.
+     * [request.security_lower_tf()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.security_lower_tf) :
+       Requests data from a specified symbol from a lower timeframe than the chart's.
+     * [request.seed()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.seed) :
+       Requests data from a user-maintained GitHub repository and returns it as a series.
+     * [request.earnings()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.earnings) :
+       Requests earnings data for the specified symbol.
+     * [request.currency_rate()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.currency_rate) :
+       Provides a daily rate that can be used to convert a value expressed in the from currency to another in the to currency.
 1. Data structures
    - [TradingView | Arrays](https://www.tradingview.com/pine-script-docs/en/v5/language/Arrays.html)
    - [TradingView | Matrices](https://www.tradingview.com/pine-script-docs/en/v5/language/Matrices.html)
