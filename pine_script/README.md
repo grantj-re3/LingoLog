@@ -153,10 +153,14 @@
    - TradingView | Alerts and runtime error messages
      * [runtime.error()](https://www.tradingview.com/pine-script-reference/v5/#fun_runtime.error) :
        ... causes a runtime error with the error message specified
-     * [alert()](https://www.tradingview.com/pine-script-reference/v5/#fun_alert) :
-       Creates an alert event when called during the real-time bar
-     * [alertcondition()](https://www.tradingview.com/pine-script-reference/v5/#fun_alertcondition) :
-       ... does NOT create an alert, it just gives you more options in Create Alert dialog.
+     * [Alerts](https://www.tradingview.com/support/categories/alerts/)
+       + [alert()](https://www.tradingview.com/pine-script-reference/v5/#fun_alert) :
+         Creates an alert event when called during the real-time bar
+       + [alertcondition()](https://www.tradingview.com/pine-script-reference/v5/#fun_alertcondition) :
+         ... does NOT create an alert, it just gives you more options in Create Alert dialog.
+       + [TradingCode.net | Alert conditions](https://www.tradingcode.net/tradingview/alert-conditions/)
+       + [Zen & The Art of Trading | Pine Script – Lesson 5: How To Create Alerts | 2019-2021](https://zenandtheartoftrading.com/pinescript/how-to-create-tradingview-alerts/)
+       + [The Art of Trading | Pine Script Feature Update: alert() • Pine Script V4 Tutorial (video) | 2021](https://www.youtube.com/watch?v=1hr_dLqxkD8)
    - TradingView | Request functions
      * [request.security()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.security) :
        Requests data from another symbol and/or timeframe.
