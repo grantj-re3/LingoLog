@@ -162,6 +162,7 @@
        + [Zen & The Art of Trading | Pine Script – Lesson 5: How To Create Alerts | 2019-2021](https://zenandtheartoftrading.com/pinescript/how-to-create-tradingview-alerts/)
        + [The Art of Trading | Pine Script Feature Update: alert() • Pine Script V4 Tutorial (video) | 2021](https://www.youtube.com/watch?v=1hr_dLqxkD8)
    - TradingView | Request functions
+     * [Other timeframes and data](https://www.tradingview.com/pine-script-docs/en/v5/concepts/Other_timeframes_and_data.html)
      * [request.security()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.security) :
        Requests data from another symbol and/or timeframe.
      * [request.security_lower_tf()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.security_lower_tf) :
