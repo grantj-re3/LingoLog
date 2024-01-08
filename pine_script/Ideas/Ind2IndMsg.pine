@@ -1,5 +1,8 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © grantj333
+
 //@version=5
-indicator("Child-ind to parent-ind message", shorttitle = "Ind2IndMsg", overlay = true) // max_bars_back = 10 ???
+indicator("Child-ind to parent-ind message v3", shorttitle = "Ind2IndMsgV3", overlay = true)
 
 //////////////////////////////////////////////////////////////////////////////
 // CHILD-INDICATOR BEHAVIOUR
@@ -7,35 +10,128 @@ indicator("Child-ind to parent-ind message", shorttitle = "Ind2IndMsg", overlay 
 // - Get a message from input, inSendMsg (e.g. "Hi")
 // - Convert it to a list of chars, [H, i]
 // - Convert it to a list of int (similar to ASCII), [41, 74]
-// - Plot a list of arbitary numbers (floats) for every bar except for the
-//   last 3 bars on the chart. For the last 3 bars, plot the values:
-//     [41, 74, 2]
+// - Plot -1 for every bar except for the
+//   first 3 bars on the chart. For the first 3 bars, plot the values:
+//     [2, 41, 74]
 //   where:
-//   - [41, 74] are the values on the [last bar - 2, last bar - 1] and represent
+//   * 2 is the value on the bar 0 and represents the message length (in characters)
+//   * [41, 74] are the values on [bar 1, bar 2] and represent
 //     the characters [H, i]
-//   - 2 is the value on the last bar and represents the message length (in characters)
+//
+// Aside: Actually, to avoid interpreting real stock prices as characters
+// in an encoded message, we don't use the plot values described above.
+// Instead we make the encoded message plot values into a huge negative
+// value of:
+//   -(N + PLOT_OFFSET)   // The initial hyphen is a minus sign
+// where:
+// * N is the value to be sent to the parent (e.g. 2, 41, 74 above)
+// * PLOT_OFFSET is a very large positive integer (but less than 2^52)
+//
+// PARENT-INDICATOR BEHAVIOUR
+// - The user must:
+//   * add a second-copy of this indicator (i.e. the child-indicator)
+//     to the chart
+//   * from the first-copy of this indicator (i.e. the parent-indicator) select 
+//     the source as being the second-copy of this indicator (i.e. the 
+//     child-indicator) via the input-source selector
+// - The parent-code will decode the child-indicator plot values (using the
+//   inverse of the above encoding) and display the result in a label.
+//
+// WHY WOULD YOU WANT TO SEND A MESSAGE FROM ONE INDICATOR TO ANOTHER AT
+// BAR 0 (WHEN YOU HAVE NO RESULTS)?
+// - The expected use case is where you are running 2 copies of the same 
+//   indicator simultaneously and you want to confirm that they have
+//   (almost) identical configurations (as determined by their input
+//   settings). So you ask the child to send its configuration (or
+//   perhaps a hash of its configuration) to the parent.
 
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-BASE_OFFSET = 1e7
+const int STATUS_OK             =  0 
+const int STATUS_UNASSIGNED     = -1
+const int STATUS_DECODE_ERROR   = -2
+const int STATUS_LOOKUP_ERROR   = -3
+const int STATUS_NO_SOURCE      = -4
 
-//////////////////////////////////////////////////////////////////////////////
-// INPUTS
-//////////////////////////////////////////////////////////////////////////////
-inLocalMsg = input.string("Local msg #1",   title="Message to appear in local indicator", group="Messages")
-inSendMsg  = input.string("Msg to send #1", title="Message to send to parent indicator",  group="Messages")
+const int PLOT_OFFSET = 100000000                               // 1e-8
 
-inChildIndicatorPlot1 = input.source(close, title="Child 1: Plot With Encoded Msg", group = "Select Ind2IndMsg child indicators")
+// ENCODING/DECODING DESCRIPTION
+// The above offset allows us to move our encoded plotValues out of the range
+// of expected OHLC stock prices... which are guaranteed to be present before
+// the user selects the receiving/decoding input-source to be our our 
+// sending/encoding indicator.
+//
+//   ENCODING:  plotVal = -(PLOT_OFFSET + N)
+//   DECODING:  N = -(PLOT_OFFSET + plotVal)
+// When:
+//   N >= 0,        a valid token sourced from this script.
+//   N = (-1..-4),  an error status code; sourced from this script.
+//   N < -4,        *source* is not encoded via this script (i.e. probably 
+//                  open/high/low/close price of a stock ).
+//
+// With the exception of error status codes:
+// - The minimum value of N is 0 (i.e. N *must* be non-negative)
+// - The maximum value of N is 2^52 - PLOT_OFFSET for *precision* encoding &
+//   decoding of ints (but higher for floats if you can tolerate loss of precision).
 
 //////////////////////////////////////////////////////////////////////////////
 // Convert int-to-alpha-char by looking up via an array index.
-// The character set is:  Newline + ASCII printable chars.
+// The character set is:  ASCII printable chars + newline.
 // We must escape: newline (\n), double quote (\") and backslash (\\).
-var CHARSET = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n !\"#$%&'()*+,-./0123456789:;<=>?"
-// var CHARSET = "\n !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-var string[] INT2ALPHA = str.split(CHARSET, "")     // An array, each element is 1 char
+// Printable ASCII + '\n' replacing the DEL char: 
+//   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n"
+// Space & '\n' can be problematic at array position 0 during debugging, so I've moved them.
+// The 0th char in the character set is special:
+// - In convertCharToPlotValue(): If ch is not in our charset, then replace with the 0th char in our charset.
+// - In encodeMessageUdt_new():   If ch is not in our charset, then replace with the 0th char in our charset.
+// - In convertPlotValueToChar(): If status is not ok, then use the 0th char in our charset.
+const string CHARSET_DEFAULT = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n !\"#$%&'()*+,-./0123456789:;<=>?"
 
+//////////////////////////////////////////////////////////////////////////////
+// USER DEFINED TYPES (UDTs)
+//////////////////////////////////////////////////////////////////////////////
+type floatUdt
+    float value
+    int status
+
+//////////////////////////////////////////////////////////////////////////////
+type intUdt
+    int value
+    int status
+
+//////////////////////////////////////////////////////////////////////////////
+type boolUdt
+    bool value
+    int status
+
+//////////////////////////////////////////////////////////////////////////////
+type charUdt
+    string value
+    int status
+
+//////////////////////////////////////////////////////////////////////////////
+type charsetUdt
+    string[]          intToAlpha    // Convert int-to-alpha-char by looking up via an array index (int)
+    map<string, int>  alphaToInt    // Convert alpha-char-to-int by looking up via a map key (char)
+
+//////////////////////////////////////////////////////////////////////////////
+type encodeMessageUdt
+    string str          // Message string
+    int[] intList       // Array of ASCII-like ints representing the above chars. PLOT_OFFSET not applied.
+    charsetUdt oCharset // Character set object
+
+//////////////////////////////////////////////////////////////////////////////
+type decodeMessageUdt
+    string str              // Message string
+    string[] chList         // Array of chars
+    charsetUdt oCharset     // Character set object
+
+    int size                // The (decoded) message size
+    bool isError = false    // Has there been a message decoding error?
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS
 //////////////////////////////////////////////////////////////////////////////
 arrayToInvertedMap(string[] arrayToInvert) =>
     // For example:
@@ -47,115 +143,229 @@ arrayToInvertedMap(string[] arrayToInvert) =>
     m
 
 //////////////////////////////////////////////////////////////////////////////
-// Inverse of INT2ALPHA. Convert alpha-char-to-int by looking up via a map key.
-var ALPHA2INT = arrayToInvertedMap(INT2ALPHA)
+charsetUdt_new(string sCharset=na) =>
+    _sCharset = na(sCharset) ? CHARSET_DEFAULT : sCharset
+    cs = charsetUdt.new(str.split(_sCharset, ""), na)
+    cs.alphaToInt := arrayToInvertedMap(cs.intToAlpha)
+    cs
 
 //////////////////////////////////////////////////////////////////////////////
-type messageUdt
-    string str
-    int[] intList
+convertFloatToPlotValue(float a) =>
+    // See Encoding/decoding description.
+    -(a + PLOT_OFFSET)
 
 //////////////////////////////////////////////////////////////////////////////
-// A messageUdt constructor
-messageUdt_new(string s) =>
-    chList = str.split(s, "")       // An array of chars representing the message
-    log.warning("array chList: {0}", chList)
+convertIntToPlotValue(int a) =>
+    // See Encoding/decoding description.
+    convertFloatToPlotValue(a)
+
+//////////////////////////////////////////////////////////////////////////////
+convertBoolToPlotValue(bool a) =>
+    // See Encoding/decoding description.
+    convertFloatToPlotValue(a ? 1 : 0)
+
+//////////////////////////////////////////////////////////////////////////////
+convertCharToPlotValue(string ch, charsetUdt oCharset) =>
+    // See Encoding/decoding description.
+    i = oCharset.alphaToInt.get(ch)
+    // If ch is not in our charset, then use the 0th char in our charset
+    convertFloatToPlotValue( na(i) ? 0 : i)
+
+//////////////////////////////////////////////////////////////////////////////
+// A encodeMessageUdt constructor
+encodeMessageUdt_new(string s, charsetUdt oCharset) =>
+    chList = str.split(s, "")           // An array of chars representing the message
+    log.info("array chList: {0}", chList)
 
     // Create an array of ints representing the above chars
     intList = array.new_int(0)
     for ch in chList
-        intList.push( ALPHA2INT.get(ch) )
-    log.warning("array ints: {0}", intList)
-    messageUdt.new(s, intList)      // Return the new object
+        i = oCharset.alphaToInt.get(ch)
+        intList.push(na(i) ? 0 : i)     // If ch is not in our charset, then use the 0th char in our charset
+    log.info("array ints: {0}", intList)
+    encodeMessageUdt.new(s, intList, oCharset)    // Return the new object
 
 //////////////////////////////////////////////////////////////////////////////
-method isMessageBarIndexRegion(messageUdt msg) =>
-    (last_bar_index - bar_index) <= msg.intList.size()
-
-//////////////////////////////////////////////////////////////////////////////
-method plotValueWithEncodedMsg(messageUdt msg) =>
-    // FIXME: Check msg will fit within bars available
-    int val = if msg.isMessageBarIndexRegion()
-        if bar_index == last_bar_index
-            msg.intList.size()              // Message size is given on the last bar
-        else
-            msgIndex = msg.intList.size() - (last_bar_index - bar_index)
-            msg.intList.get(msgIndex)       // Int representing a char given on the bars leading up to the last bar
+method createPlotValueForEncodedMsg(encodeMessageUdt msg) =>
+    // We will send the message as one character per bar, as follows.
+    // - Bar (index) 0: An integer representing the message length (L).
+    // - Bars 1..L: Character 1 to character L inclusive.
+    // - Bars (L+1)..(EndOfChart): Integer STATUS_UNASSIGNED.
+    // - We will not issue an error or warning if the message does not fit (i.e.
+    //   chart has less than L+1 bars).
+    int intVal = if bar_index > msg.intList.size()
+        STATUS_UNASSIGNED               // No infomation to encode after the message ends
+    else if bar_index == 0
+        msg.intList.size()              // Encode the message-size (as an int) as the plot-price at bar 0
     else
-        0                                   // No infomation given (until we near the end of the chart)
+        msg.intList.get(bar_index - 1)  // Encode the next message-char (as an int) as the plot-price on the bars 1..message-size
 
-    // Return a float with a large negative offset so it cannot be confused with
-    // built-in input sources (like open or close) when received by the parent indicator.
-    -(BASE_OFFSET + val)
+    convertIntToPlotValue(intVal)
 
 //////////////////////////////////////////////////////////////////////////////
-plotToIndex(float plotVal) =>
-    plotVal > -BASE_OFFSET ? na : int(math.abs(int(plotVal) + BASE_OFFSET))
+convertPlotValueToFloat(float plotVal) =>
+    // See Encoding/decoding description.
+    // Return na if the received plotVal is unexpected
+    a = -(plotVal + PLOT_OFFSET)
+    floatUdt.new(a,
+      a >= 0 ? STATUS_OK : a == STATUS_UNASSIGNED ? STATUS_UNASSIGNED : STATUS_NO_SOURCE)
 
 //////////////////////////////////////////////////////////////////////////////
-method logPlotValue(messageUdt msg, float plotVal) =>
-    if msg.isMessageBarIndexRegion()
-        idx = plotToIndex(plotVal)
-        log.info("SentFromChildInd | lastBar: {0} | barIndex: {1} | plotVal: {2} | idx: {3} | char: \"{4}\" | {5} | {6}", 
-          last_bar_index, bar_index, plotVal, idx,
-          INT2ALPHA.get( int(idx) ), msg.intList.size(), msg.str)
+convertPlotValueToInt(float plotVal) =>
+    // See Encoding/decoding description.
+    // Return na if the received plotVal is unexpected
+    f = convertPlotValueToFloat(plotVal)
+    intUdt.new(int(f.value), f.status)
 
 //////////////////////////////////////////////////////////////////////////////
-// decodeChildIndMsg(float encodedPlot1) =>
-//     log.info("encodedPlot1: {0,number,0.00}", encodedPlot1)
-//     msgSize = plotToIndex(encodedPlot1)
-//     if msgSize < 0 or msgSize > 3
-//         msgSize := 3
-//     // ai = array.new_int(0)
-//     a = array.new_string(0)
-//     for i = 0 to (msgSize - 1)
-//         hist = msgSize - i
-//         idx = plotToIndex(encodedPlot1[hist])
-//         ch = INT2ALPHA.get(idx)
-//         // ai.push(plotToIndex(idx))
-//         a.push(ch)
-//     a.join("")
+convertPlotValueToBool(float plotVal) =>
+    // See Encoding/decoding description.
+    // Return na if the received plotVal is unexpected
+    f = convertPlotValueToFloat(plotVal)
+    boolUdt.new(f.value == 1 ? true : false,
+      f.status < 0 ? f.status : f.value != 1 and f.value != 0 ? STATUS_DECODE_ERROR : STATUS_OK)
 
 //////////////////////////////////////////////////////////////////////////////
-// MAIN
+convertPlotValueToChar(float plotVal, charsetUdt oCharset) =>
+    // See Encoding/decoding description.
+    // Return na if the received plotVal is unexpected
+    i = convertPlotValueToInt(plotVal)
+    status = i.status < 0 ? i.status : i.value >= oCharset.intToAlpha.size() ? STATUS_LOOKUP_ERROR : STATUS_OK
+    // If status is not ok, then use the 0th char in our charset.
+    ch = oCharset.intToAlpha.get(status == STATUS_OK ? i.value : 0)
+    charUdt.new(ch, status)
+
 //////////////////////////////////////////////////////////////////////////////
-var msg = messageUdt_new(inSendMsg)
+method writePlotValueToLog(encodeMessageUdt msg, float plotVal) =>
+    if bar_index <= msg.intList.size()
+        idx = convertPlotValueToInt(plotVal)
+        ch = bar_index == 0 ? "" : msg.oCharset.intToAlpha.get(idx.value)
+        log.info("Encoded by child ind | barIndex: {0} | plotVal: {1} | idx: {2} | char: \"{3}\" | {4} | {5}", 
+          bar_index, plotVal, idx.value, ch, msg.intList.size(), msg.str)
 
-// BEWARE: If we use islastconfirmedhistory below (instead of islast) while
-// a trading session is open, then:
-// - the realtime bar will be the last bar
-// - the islastconfirmedhistory bar will be the second last bar
-// - the result will be that inChildIndicatorPlot1[0] below will read the int
-//   representing the *last char of the message* (but interpret it as msgSize)
-if barstate.islast
-    sChildMsg = "NOT-OUR-INDICATOR-SOURCE?"     // Assume the message is invalid (due to a non-indicator source)
-    msgSize = plotToIndex(inChildIndicatorPlot1)
-    if not na(msgSize)
-        chList = array.new_string(0)    // Use an array to build the child-msg-string
+//////////////////////////////////////////////////////////////////////////////
+method decodeMsgFromChildInd(decodeMessageUdt msg, float encodedPlot1, string noIndSrcMsg="NO-INDICATOR-SOURCE?") =>
+    oInt = convertPlotValueToInt(encodedPlot1)
+    if bar_index == 0 and oInt.status != STATUS_OK
+        // Assume the message is invalid (due to a non-indicator source)
+        msg.str := noIndSrcMsg
+        msg.size := 0
+        msg.isError := true
 
-        for i = 0 to (msgSize - 1)
-            hist = msgSize - i
-            idx = plotToIndex(inChildIndicatorPlot1[hist])
-            ch = INT2ALPHA.get(idx)
-            log.info("DEBUG2: hist:{0,number,0}|idx:{1,number,0}|ch:{2}", hist, idx, ch)
-            chList.push(ch)
-        sChildMsg := chList.join("")
+    else if not msg.isError
+        // Assume the message is ok
+        if bar_index == 0
+            // Decode the message-size (as an int) from the plot-price at bar 0
+            msg.size := oInt.value
+
+        else if bar_index <= msg.size
+            // Decode the next message-char (as an int) from the plot-price on the bars 1..message-size
+            ch = msg.oCharset.intToAlpha.get(oInt.value)
+            msg.chList.push(ch)
+            if bar_index == msg.size            // We have just collected the last char of the msg
+                msg.str := msg.chList.join("")
+    msg
+
+//////////////////////////////////////////////////////////////////////////////
+// DEMO - SECTION 1 - CHILD INDICATOR
+// Encode the message into our plot-values, which can be read/decoded by
+// the parent-Indicator.
+//////////////////////////////////////////////////////////////////////////////
+// Inputs
+inSendMsg  = input.string("Msg to send #1", title="Message to send to parent indicator")
+inChildIndicatorPlot1 = input.source(close, title="Child 1: Plot With Encoded Msg", group = "Select Ind2IndMsg child indicators")
+
+// Initialise the character set object. Optionally use your own e.g. charsetUdt_new("� AEIOUaeiou") where the
+// 0th char is the Unicode Replacement Character as per https://www.fileformat.info/info/unicode/char/fffd/index.htm
+var oCharset = charsetUdt_new()
+var encodedMsg = encodeMessageUdt_new(inSendMsg, oCharset)
+
+// Encode the message as a plot; one character (plot-value) per bar
+plotVal = encodedMsg.createPlotValueForEncodedMsg()
+
+// Send some extra info (e.g. processing result) here by overriding plotVal with some non-negative info.
+//
+// Typically the end-bar or end-date condition where final processing occurs, is:
+// - barstate.islast
+// - barstate.islastconfirmedhistory
+// but could be:
+// - bar_index == last_bar_index - 20, etc.
+if bar_index == last_bar_index - 4
+    plotVal := convertIntToPlotValue(time)  // Unix 'time' (i.e. this bar's opening date-time) is just an int
+
+else if bar_index == last_bar_index - 3
+    plotVal := convertBoolToPlotValue(close > open)
+
+else if bar_index == last_bar_index - 2
+    plotVal := convertFloatToPlotValue(12345.6789)
+
+else if bar_index == last_bar_index - 1
+    plotVal := convertCharToPlotValue("Z", oCharset)
+
+else
+    encodedMsg.writePlotValueToLog(plotVal)
+
+// This (child) indicator plot becomes a selectable source from
+// another (parent) indicator via the input.source() statement
+plot(plotVal, title = "Plot With Encoded Msg", display = (display.all - display.pane))
+
+//////////////////////////////////////////////////////////////////////////////
+// DEMO - SECTION 2 - PARENT INDICATOR
+// Decode the message from the child-indicator (which has been encoded into 
+// the child-indicators plot-values).
+//////////////////////////////////////////////////////////////////////////////
+// Decode the message from the encoded-plot-values
+var decodedMsg = decodeMessageUdt.new(na, array.new<string>(0), oCharset)
+decodedMsg.decodeMsgFromChildInd(inChildIndicatorPlot1)
+
+var string sDate    = na
+var string sBool    = na
+var string sFloat   = na
+var string sChar    = na
+
+if bar_index == last_bar_index - 4
+    // Get this bar's date (an int) sent by the child-indicator
+    objIntDate = convertPlotValueToInt(inChildIndicatorPlot1)
+    log.info("#4# bar_index: {0} | status: {1} | value: {2} | inChildIndicatorPlot1: {3}", bar_index, objIntDate.status, objIntDate.value, inChildIndicatorPlot1)
+    sDate := switch objIntDate.status
+        STATUS_OK           =>  str.format("{0,date,yyyy-MM-dd}", objIntDate.value)
+        STATUS_UNASSIGNED   =>  "CHILD-IND-FOUND-BUT-VALUE-UNASSIGNED"
+        =>                      "CHILD-IND-NOT-DETECTED"
+
+else if bar_index == last_bar_index - 3
+    objBool = convertPlotValueToBool(inChildIndicatorPlot1)
+    log.info("#3# bar_index: {0} | status: {1} | value: {2} | inChildIndicatorPlot1: {3}", bar_index, objBool.status, objBool.value, inChildIndicatorPlot1)
+    sBool := switch objBool.status
+        STATUS_OK           =>  str.tostring(objBool.value)
+        STATUS_UNASSIGNED   =>  "CHILD-IND-FOUND-BUT-VALUE-UNASSIGNED"
+        STATUS_DECODE_ERROR =>  "CHILD-IND-FOUND-BUT-DECODE-ERROR"
+        =>                      "CHILD-IND-NOT-DETECTED"
+
+else if bar_index == last_bar_index - 2
+    objFloat = convertPlotValueToFloat(inChildIndicatorPlot1)
+    log.info("#2# bar_index: {0} | status: {1} | value: {2} | inChildIndicatorPlot1: {3}", bar_index, objFloat.status, objFloat.value, inChildIndicatorPlot1)
+    sFloat := switch objFloat.status
+        STATUS_OK           =>  str.tostring(objFloat.value)
+        STATUS_UNASSIGNED   =>  "CHILD-IND-FOUND-BUT-VALUE-UNASSIGNED"
+        =>                      "CHILD-IND-NOT-DETECTED"
+
+else if bar_index == last_bar_index - 1
+    objChar = convertPlotValueToChar(inChildIndicatorPlot1, oCharset)
+    log.info("#1# bar_index: {0} | status: {1} | value: {2} | inChildIndicatorPlot1: {3}", bar_index, objChar.status, objChar.value, inChildIndicatorPlot1)
+    sChar := switch objChar.status
+        STATUS_OK           =>  str.tostring(objChar.value)
+        STATUS_UNASSIGNED   =>  "CHILD-IND-FOUND-BUT-VALUE-UNASSIGNED"
+        STATUS_LOOKUP_ERROR =>  "CHILD-IND-FOUND-BUT-LOOKUP-ERROR"
+        =>                      "CHILD-IND-NOT-DETECTED"
 
     aLabel = array.new_string(0)    // Use an array to build the label-string
-    aLabel.push(str.format("Local msg:\n{0}\n", inLocalMsg))
     aLabel.push(str.format("Message to send to parent-indicator:\n{0}\n", inSendMsg))
-    aLabel.push(str.format("Message received from child-indicator:\n{0}", sChildMsg))
-    if not na(msgSize)
-        aLabel.push(str.format("msgSize: {0}", msgSize))
+    aLabel.push(str.format("Message received from child-indicator:\n{0}", decodedMsg.str))
+    aLabel.push(str.format("INT: The most recent bar''s date received from child-indicator:\n{0}", sDate))
+    aLabel.push(str.format("BOOL: close>open on bar after the above date received from child-indicator:\n{0}", sBool))
+    aLabel.push(str.format("FLOAT: received from child-indicator:\n{0}", sFloat))
+    aLabel.push(str.format("CHAR: received from child-indicator:\n{0}", sChar))
 
     sLabel = aLabel.join("\n")
     label.new(bar_index +10, close, text=sLabel, style = label.style_label_left, color=color.green)
-
-//////////////////////////////////////////////////////////////////////////////
-// PLOTS
-//////////////////////////////////////////////////////////////////////////////
-plotVal = msg.plotValueWithEncodedMsg()
-plot(plotVal, title = "Plot With Encoded Msg", display = (display.all - display.pane))
-
-msg.logPlotValue(plotVal)
 
