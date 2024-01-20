@@ -137,7 +137,7 @@
        the input.source() function
 
 
-### Language statements
+## Language statements
 
 1. Loops
    - [TradingView | Loops](https://www.tradingview.com/pine-script-docs/en/v5/language/Loops.html)
@@ -214,17 +214,12 @@
      * Protected: No one can see the source code but everyone can apply it to a chart.
 
 
-### Time and time zones
+## Gotchas
 
-- https://www.tradingview.com/pine-script-docs/en/v5/concepts/Time.html
-- https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp
-- https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp-0
-- https://www.tradingview.com/pine-script-reference/v5/#var_time
-- https://www.tradingview.com/pine-script-reference/v5/#fun_input.time
-- https://www.tradingview.com/blog/en/new-parameter-for-date-input-added-to-pine-21812/
-- https://www.tradingcode.net/tradingview/time-zone-functions-variables/
-- https://www.tradingcode.net/tradingview/time-date-input/
+- Functions containing *var* variables
+  * [Trendoscope | Thinking in Pine - Functions Containing Var Variables | 2023](https://www.tradingview.com/chart/BTCUSDT/HG5hV7EF-Thinking-in-Pine-Functions-Containing-Var-Variables/)
 
+### Gotcha: Time and time zones
 
 input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. However:
 
@@ -251,3 +246,15 @@ if time > inputDate    // IF the bar-open time is after "1 Feb 2023 00:00" (in t
     ...
 ```
 
+- https://www.tradingview.com/pine-script-docs/en/v5/concepts/Time.html
+- https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp-0
+- https://www.tradingview.com/pine-script-reference/v5/#var_time
+- https://www.tradingview.com/pine-script-reference/v5/#fun_input.time
+- https://www.tradingview.com/blog/en/new-parameter-for-date-input-added-to-pine-21812/
+- https://www.tradingcode.net/tradingview/time-zone-functions-variables/
+- https://www.tradingcode.net/tradingview/time-date-input/
+
+
+## Ideas
+
+- [Trendoscope | How to create simple web-hook to send alerts to Telegram | 2023](https://www.tradingview.com/chart/ETHUSD/uQCb82ML-How-to-create-simple-web-hook-to-send-alerts-to-Telegram/)
