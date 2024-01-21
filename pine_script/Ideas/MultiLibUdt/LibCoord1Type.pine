@@ -1,0 +1,7 @@
+//@version=5
+library("LibCoordType", overlay = true)
+
+export type coord
+    float x
+    float y
+

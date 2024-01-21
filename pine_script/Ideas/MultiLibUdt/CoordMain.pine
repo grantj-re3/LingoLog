@@ -1,0 +1,21 @@
+//@version=5
+indicator("CoordMain", overlay = true)
+
+import USERNAME/LibCoordType/1 as ct       // Import the user defined type (UDT): coord
+import USERNAME/LibCoordAdd/1 as cadd      // Import the method: add()
+import USERNAME/LibCoordSub/1 as csub      // Import the method: sub()
+    
+if barstate.islast
+    a = ct.coord.new(4, 8)
+    b = ct.coord.new(3, 1)
+
+    // Pine script knows that the ct.coord UDT is the same as cadd.ctype.coord UDT & csub.ctype.coord UDT
+    // because it is able associate variable-a with the add() method in cadd & the sub() method in csub!
+    sum = a.add(b)
+    diff = a.sub(b)
+
+    log.info("a=({0},{1})", a.x, a.y)
+    log.info("b=({0},{1})", b.x, b.y)
+    log.info("sum=({0},{1})", sum.x, sum.y)
+    log.info("diff=({0},{1})", diff.x, diff.y)
+

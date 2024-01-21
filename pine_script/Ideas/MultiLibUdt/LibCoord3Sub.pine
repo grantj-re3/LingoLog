@@ -1,0 +1,8 @@
+//@version=5
+library("LibCoordSub", overlay = true)
+
+import USERNAME/LibCoordType/1 as ctype
+    
+export method sub(ctype.coord a, ctype.coord b) =>
+    ctype.coord.new(a.x - b.x, a.y - b.y)
+

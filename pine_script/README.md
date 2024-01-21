@@ -219,6 +219,7 @@
 - Functions containing *var* variables
   * [Trendoscope | Thinking in Pine - Functions Containing Var Variables | 2023](https://www.tradingview.com/chart/BTCUSDT/HG5hV7EF-Thinking-in-Pine-Functions-Containing-Var-Variables/)
 
+
 ### Gotcha: Time and time zones
 
 input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. However:
@@ -258,3 +259,5 @@ if time > inputDate    // IF the bar-open time is after "1 Feb 2023 00:00" (in t
 ## Ideas
 
 - [Trendoscope | How to create simple web-hook to send alerts to Telegram | 2023](https://www.tradingview.com/chart/ETHUSD/uQCb82ML-How-to-create-simple-web-hook-to-send-alerts-to-Telegram/)
+  * zero cost solution
+
