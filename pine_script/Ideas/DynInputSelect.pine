@@ -1,0 +1,85 @@
+//@version=5
+// © 2024 GJ
+indicator("DynamicInputSelectFudge", shorttitle = "DynInputSelect", overlay=true)
+
+//////////////////////////////////////////////////////////////////////////////
+// INTRODUCTION
+// Let's say that we have an array or map which is built from information
+// from the chart and we do not know the keys, values or indices at compile-
+// time. How can we select keys, values or indices from such arrays/maps
+// using an input?
+//
+// Most pine script input.*() functions support the options parameter
+// which creates a drop-down list input from a tuple such as:
+//   options = ["Key F", "Key I", "Key X"]
+// however the elements of the tuple must be constants and must be known
+// at compile time.
+//
+// PURPOSE
+// The purpose of this script is to:
+// 1/ demonstrate a "fudge" that allows us to choose an arbitary key from a
+//    map by using a corresponding integer/index; and
+// 2/ demonstrate a "fudge" that allows us to choose an arbitary key from a
+//    map by typing the key-name
+// 
+// I prefer method 1 because:
+// - method 2 can only be used if the key is a string or number
+// - method 2 is more prone to typing errors if the string/number is long
+//   and we use a label to display the options (although we could display
+//   the options in the Pine Log where we can copy text then paste it
+//   into the corresponding input; this would require a few extra mouse clicks)
+
+//////////////////////////////////////////////////////////////////////////////
+// INPUTS
+//////////////////////////////////////////////////////////////////////////////
+inInt = input.int(0, minval=0, title="Enter an integer (e.g. 0) to select the desired dynamic key-name (from the large green label)")
+inStr = input.string("", title="Enter the desired dynamic key-name e.g. \"Key A\" without the quotes  (from the large green label)")
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+ALPHAS = str.split("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "")
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+// This block creates a map & populates it with key-value pairs.
+// The size of the map is unknown at compile-time.
+var dynamicMap = map.new<string, string>()
+idx = ALPHAS.size() - last_bar_index - 1 + bar_index
+if idx >= 0                     // The last 26 bars
+    if close[0] > close[1]      // Populate the map depending on this unpredictable condition
+        letter = ALPHAS.get(idx)
+        key = str.format("Key {0}", letter)
+        value = str.format("The config for key {0}", letter)
+        dynamicMap.put(key, value)
+
+// This block:
+// - Displays key-names & corresponding integers/indices for each key. This 
+//   information behaves as a prompt for each of the two INPUTS
+// - Displays which key-value pair has been selected via the integer/index method
+// - Displays which key-value pair has been selected via the key-name method
+if barstate.islast
+    lbl1text = array.new<string>(0)
+    lbl1text.push("INPUT VALUES FOR KEY-NAMES")
+    for i in dynamicMap.keys().sort_indices()
+        s = str.format("{0}Enter {1,number,0} for option: ''{2}''{3}", 
+          inInt == i ? "<< " : "",
+          i, dynamicMap.keys().get(i), 
+          inInt == i ? " >>" : "")
+        lbl1text.push(s)
+
+    // Display the prompt label
+    label.new(bar_index, close, text = lbl1text.join("\n"), style = label.style_label_upper_left, color = color.green)
+
+    // Show which key-value pair has been selected via the integer/index method
+    s1 = "The key you selected is:\n" + (inInt < dynamicMap.size() ? dynamicMap.keys().get(inInt) : "Invalid-key") +
+      "\nwith the value:\n" + (inInt < dynamicMap.size() ? dynamicMap.values().get(inInt) : "Invalid-value")
+    label.new(bar_index, close, text = s1, style = label.style_label_lower_left, color = color.green)
+
+    // Show which key-value pair has been selected via the key-name method
+    val = dynamicMap.get(inStr)
+    s2 = "The key you typed (" + inStr + ") is " + (na(val) ? "INVALID" : "VALID") + 
+      ".\nThe corresponding value is:\n" + (na(val) ? "Invalid-value" : val)
+    label.new(bar_index, close, text = s2, style = label.style_label_lower_right, color = color.silver)
+
