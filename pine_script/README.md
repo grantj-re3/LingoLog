@@ -11,6 +11,14 @@
 
 1. [TradingView | User Manual: Language: Execution model](https://www.tradingview.com/pine-script-docs/en/v5/language/Execution_model.html)
 
+1. [TradingView | User Manual: Language: Script structure](https://www.tradingview.com/pine-script-docs/en/v5/language/Script_structure.html)
+   - Version
+   - Declaration statement
+   - Code
+   - Comments
+   - Line wrapping
+   - Compiler annotations
+
 1. [TradingView | User Manual: Language: Variable declarations](https://www.tradingview.com/pine-script-docs/en/v5/language/Variable_declarations.html)
    - A variable reassignment is done using the := reassignment operator. It can only be done after a variable has been first declared and given an initial value.
    - When no explicit declaration mode is specified, i.e. no var or varip keyword is used, the variable is declared and initialized on each bar...
@@ -218,6 +226,12 @@
 
 - Functions containing *var* variables
   * [Trendoscope | Thinking in Pine - Functions Containing Var Variables | 2023](https://www.tradingview.com/chart/BTCUSDT/HG5hV7EF-Thinking-in-Pine-Functions-Containing-Var-Variables/)
+
+
+### Gotcha: The "Incorrect param token" warning
+
+This is due to an empty `//@param` compiler annotation or one where the variable name
+following `//@param` does not match a function argument. See *Compiler annotations* above.
 
 
 ### Gotcha: Time and time zones
