@@ -227,6 +227,8 @@
 - Functions containing *var* variables
   * [Trendoscope | Thinking in Pine - Functions Containing Var Variables | 2023](https://www.tradingview.com/chart/BTCUSDT/HG5hV7EF-Thinking-in-Pine-Functions-Containing-Var-Variables/)
 
+- Short-circuit evaluation of booleans not supported
+  * [Reddit: Stratfather | Feature Request: Pine Script - Short-circuit evaluation for boolean expressions | 2023](https://www.reddit.com/r/TradingView/comments/12iu7xf/feature_request_pine_script_shortcircuit/)
 
 ### Gotcha: The "Incorrect param token" warning
 
