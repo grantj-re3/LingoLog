@@ -1,0 +1,104 @@
+//@version=5
+// © 2024 GJ
+indicator("CsvInputOutput", overlay=true)
+
+//////////////////////////////////////////////////////////////////////////////
+// PURPOSE
+// To allow CSV-like data to be pasted into pine script, that is:
+// - Insert CSV data into a pine script program with a variety of data types
+//   (i.e. float, date, string).
+// - Load the CSV data into a UDT (user defined type).
+//
+// To allow CSV data to be copied from pine script to a CSV file, that is:
+// - Write CSV data from a UDT to the Pine Log (where it can be pasted into
+//   an external CSV file).
+//
+// Linux/bash helper commands are given in the comments.
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+TIMEZONE_STK_EX = "GMT-5"   // NYSE timezone
+
+//////////////////////////////////////////////////////////////////////////////
+// OBJECTS / USER DEFINED TYPES (UDTs)
+//////////////////////////////////////////////////////////////////////////////
+type buyUdt
+    float  price
+    int    date
+    string type
+
+//////////////////////////////////////////////////////////////////////////////
+type sellUdt
+    float  price
+    int    date
+    string reason
+
+//////////////////////////////////////////////////////////////////////////////
+type buySellRecordUdt
+    buyUdt   buy 
+    sellUdt  sell
+ 
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS
+//////////////////////////////////////////////////////////////////////////////
+CsvIn() =>
+    a = array.new<string>(0)
+    // In Linux/bash, you can convert a CSV file to the push-statements below
+    // (assuming the CSV contains no ['"/] chars) with:
+    //     $ sed 's/^/a.push("/; s/$/")/' myInData.csv
+    // This statement adds 'a.push("' to the start of each CSV line and '")'
+    // to the end, and writes the result to the screen (i.e. stdout) where
+    // the text can be pasted into this script.
+    //
+    // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
+    a.push("10.00,2023-01-13,A,11.11,2023-02-14,M")
+    a.push("20.00,2023-03-15,B,22.22,2023-04-16,N")
+    a.push("30.00,2023-05-17,C,33.33,2023-06-18,O")
+    a.push("40.00,2023-07-19,D,44.44,2023-08-20,P")
+    a.push("50.00,2023-09-21,E,55.55,2023-10-22,Q")
+    a.push("60.00,2023-11-23,F,66.66,2023-12-24,R")
+    a
+
+//////////////////////////////////////////////////////////////////////////////
+convertDateToInts(string dateYYYY_MM_DD) =>
+    // Date format: YYYY-MM-DD, e.g. "2023-02-14"
+    fields = str.split(dateYYYY_MM_DD, "-")
+    yyyy = int(str.tonumber(fields.get(0)))
+    mm   = int(str.tonumber(fields.get(1)))
+    dd   = int(str.tonumber(fields.get(2)))
+    [yyyy, mm, dd]
+
+//////////////////////////////////////////////////////////////////////////////
+getRecordsFromCsvIn() =>
+    recs = array.new<buySellRecordUdt>(0)
+    for csv in CsvIn()
+        // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
+        fields = str.split(csv, ",")
+
+        [buyYear, buyMonth, buyDay] = convertDateToInts(fields.get(1))
+        buy = buyUdt.new(str.tonumber(fields.get(0)), timestamp(TIMEZONE_STK_EX, buyYear, buyMonth, buyDay), fields.get(2))
+        [sellYear, sellMonth, sellDay] = convertDateToInts(fields.get(4))
+        sell = sellUdt.new(str.tonumber(fields.get(3)), timestamp(TIMEZONE_STK_EX, sellYear, sellMonth, sellDay), fields.get(5))
+        recs.push(buySellRecordUdt.new(buy, sell))
+    recs
+
+//////////////////////////////////////////////////////////////////////////////
+writeRecordsToLog(buySellRecordUdt[] recs) =>
+    // You can paste the Pine Log into a file myOutData.txt.
+    // In Linux/bash, you can convert it to a CSV file with:
+    //     egrep -v "^\[" myOutData.txt > myOutData.csv
+    // This statement omits all lines starting with "[" and 
+    // writes the CSV lines to myOutData.csv.
+    for rec in recs
+        b = str.format("{0,number,0.00},{1,date,yyyy-MM-dd},{2}", rec.buy.price, rec.buy.date, rec.buy.type)
+        s = str.format("{0,number,0.00},{1,date,yyyy-MM-dd},{2}", rec.sell.price, rec.sell.date, rec.sell.reason)
+        log.info("\n{0},{1}", b, s)
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+if barstate.islast
+    recs = getRecordsFromCsvIn()
+    writeRecordsToLog(recs)
+
