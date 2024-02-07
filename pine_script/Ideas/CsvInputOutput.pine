@@ -61,7 +61,7 @@ CsvIn() =>
     a
 
 //////////////////////////////////////////////////////////////////////////////
-convertDateToInts(string dateYYYY_MM_DD) =>
+method convertDateToInts(string dateYYYY_MM_DD) =>
     // Date format: YYYY-MM-DD, e.g. "2023-02-14"
     fields = str.split(dateYYYY_MM_DD, "-")
     yyyy = int(str.tonumber(fields.get(0)))
@@ -76,15 +76,15 @@ getRecordsFromCsvIn() =>
         // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
         fields = str.split(csv, ",")
 
-        [buyYear, buyMonth, buyDay] = convertDateToInts(fields.get(1))
+        [buyYear, buyMonth, buyDay]    = fields.get(1).convertDateToInts()
+        [sellYear, sellMonth, sellDay] = fields.get(4).convertDateToInts()
         buy = buyUdt.new(str.tonumber(fields.get(0)), timestamp(TIMEZONE_STK_EX, buyYear, buyMonth, buyDay), fields.get(2))
-        [sellYear, sellMonth, sellDay] = convertDateToInts(fields.get(4))
         sell = sellUdt.new(str.tonumber(fields.get(3)), timestamp(TIMEZONE_STK_EX, sellYear, sellMonth, sellDay), fields.get(5))
         recs.push(buySellRecordUdt.new(buy, sell))
     recs
 
 //////////////////////////////////////////////////////////////////////////////
-writeRecordsToLog(buySellRecordUdt[] recs) =>
+method writeRecordsToLog(buySellRecordUdt[] recs) =>
     // You can paste the Pine Log into a file myOutData.txt.
     // In Linux/bash, you can convert it to a CSV file with:
     //     egrep -v "^\[" myOutData.txt > myOutData.csv
@@ -100,5 +100,5 @@ writeRecordsToLog(buySellRecordUdt[] recs) =>
 //////////////////////////////////////////////////////////////////////////////
 if barstate.islast
     recs = getRecordsFromCsvIn()
-    writeRecordsToLog(recs)
+    recs.writeRecordsToLog()
 
