@@ -14,6 +14,9 @@ indicator("CsvInputOutput", overlay=true)
 //   an external CSV file).
 //
 // Linux/bash helper commands are given in the comments.
+//
+// GOTCHA: Pine script strings have a limit of 4096 characters. This may limit
+// the size of CSV lines which can be input or output using the method below.
 
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
@@ -42,15 +45,16 @@ type buySellRecordUdt
 //////////////////////////////////////////////////////////////////////////////
 // FUNCTIONS
 //////////////////////////////////////////////////////////////////////////////
-CsvIn() =>
+CsvFileIn() =>
     a = array.new<string>(0)
+    // This is not quite a CSV file as it requires some pre-processing!
     // In Linux/bash, you can convert a CSV file to the push-statements below
     // (assuming the CSV contains no ['"/] chars) with:
     //     $ sed 's/^/a.push("/; s/$/")/' myInData.csv
     // This statement adds 'a.push("' to the start of each CSV line and '")'
     // to the end, and writes the result to the screen (i.e. stdout) where
     // the text can be pasted into this script.
-    //
+
     // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
     a.push("10.00,2023-01-13,A,11.11,2023-02-14,M")
     a.push("20.00,2023-03-15,B,22.22,2023-04-16,N")
@@ -63,18 +67,18 @@ CsvIn() =>
 //////////////////////////////////////////////////////////////////////////////
 method convertDateToInts(string dateYYYY_MM_DD) =>
     // Date format: YYYY-MM-DD, e.g. "2023-02-14"
-    fields = str.split(dateYYYY_MM_DD, "-")
-    yyyy = int(str.tonumber(fields.get(0)))
-    mm   = int(str.tonumber(fields.get(1)))
-    dd   = int(str.tonumber(fields.get(2)))
+    dateParts = str.split(dateYYYY_MM_DD, "-")
+    yyyy = int(str.tonumber(dateParts.get(0)))
+    mm   = int(str.tonumber(dateParts.get(1)))
+    dd   = int(str.tonumber(dateParts.get(2)))
     [yyyy, mm, dd]
 
 //////////////////////////////////////////////////////////////////////////////
 getRecordsFromCsvIn() =>
     recs = array.new<buySellRecordUdt>(0)
-    for csv in CsvIn()
+    for csvLine in CsvFileIn()
         // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
-        fields = str.split(csv, ",")
+        fields = str.split(csvLine, ",")
 
         [buyYear, buyMonth, buyDay]    = fields.get(1).convertDateToInts()
         [sellYear, sellMonth, sellDay] = fields.get(4).convertDateToInts()
