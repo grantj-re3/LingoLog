@@ -74,7 +74,7 @@ method convertDateToInts(string dateYYYY_MM_DD) =>
     [yyyy, mm, dd]
 
 //////////////////////////////////////////////////////////////////////////////
-getRecordsFromCsvIn() =>
+getRecordsFromCsvFileIn() =>
     recs = array.new<buySellRecordUdt>(0)
     for csvLine in CsvFileIn()
         // CSV fields: buy.price, buy.date, buy.type, sell.price, sell.date, sell.reason
@@ -103,6 +103,6 @@ method writeRecordsToLog(buySellRecordUdt[] recs) =>
 // MAIN
 //////////////////////////////////////////////////////////////////////////////
 if barstate.islast
-    recs = getRecordsFromCsvIn()
+    recs = getRecordsFromCsvFileIn()
     recs.writeRecordsToLog()
 
