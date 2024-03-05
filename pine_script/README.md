@@ -230,6 +230,14 @@
 - Short-circuit evaluation of booleans not supported
   * [Reddit: Stratfather | Feature Request: Pine Script - Short-circuit evaluation for boolean expressions | 2023](https://www.reddit.com/r/TradingView/comments/12iu7xf/feature_request_pine_script_shortcircuit/)
 
+
+### Gotcha: The behaviour of the real-time bar after close of trading
+
+[TradingCode | See if TradingView script processes real-time price bar (barstate.isrealtime) | 2022](https://www.tradingcode.net/tradingview/real-time-bar/)
+says: *When a real-time bar closes, barstate.isrealtime stays true on that bar. That’s because
+the bar remains made with real-time data (until we relaunch the TradingView app)*
+
+
 ### Gotcha: The "Incorrect param token" warning
 
 This is due to an empty `//@param` compiler annotation or one where the variable name
