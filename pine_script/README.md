@@ -247,7 +247,7 @@ following `//@param` does not match a function argument. See *Compiler annotatio
 ### Gotcha: Box IDs
 
 Box IDs can be assigned and used within various box.\*() functions. However, it
-appears they cannot be compared (e.g. with equals '=' or not equals '!=') nor can
+appears they cannot be compared (e.g. with equals '==' or not equals '!=') nor can
 they be cast/converted to a string or a number with str.tostring() or str.tonumber().
 
 I suspect that line, polyline, label and similar object IDs have the same limitation.
