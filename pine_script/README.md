@@ -244,6 +244,21 @@ This is due to an empty `//@param` compiler annotation or one where the variable
 following `//@param` does not match a function argument. See *Compiler annotations* above.
 
 
+### Gotcha: Box IDs
+
+Box IDs can be assigned and used within various box.\*() functions. However, it
+appears they cannot be compared (e.g. with equals '=' or not equals '!=') nor can
+they be cast/converted to a string or a number with str.tostring() or str.tonumber().
+
+I suspect that line, polyline, label and similar object IDs have the same limitation.
+
+
+### Gotcha: str.format()
+
+str.format() always appears to interpret the time as UTC. To interpret the unix-time for a
+different timezone, use str.format_time() and specify the desired timezone.
+
+
 ### Gotcha: Time and time zones
 
 input.time(), timestamp() and 'time' (the opening-time of the bar) are all in the date/time UNIX format. However:
@@ -275,6 +290,8 @@ if time > inputDate    // IF the bar-open time is after "1 Feb 2023 00:00" (in t
 - https://www.tradingview.com/pine-script-reference/v5/#fun_timestamp-0
 - https://www.tradingview.com/pine-script-reference/v5/#var_time
 - https://www.tradingview.com/pine-script-reference/v5/#fun_input.time
+- https://www.tradingview.com/pine-script-reference/v5/#fun_str.format
+- https://www.tradingview.com/pine-script-reference/v5/#fun_str.format_time
 - https://www.tradingview.com/blog/en/new-parameter-for-date-input-added-to-pine-21812/
 - https://www.tradingcode.net/tradingview/time-zone-functions-variables/
 - https://www.tradingcode.net/tradingview/time-date-input/
