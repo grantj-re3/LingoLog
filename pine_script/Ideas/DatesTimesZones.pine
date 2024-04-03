@@ -1,0 +1,75 @@
+//@version=5
+// © 2024 GJ
+indicator("DatesTimesZones", overlay=true)
+
+//////////////////////////////////////////////////////////////////////////////
+// PURPOSE
+// Show that:
+// - if we use the pine script timezone of syminfo.timezone when we get or
+//   set a timestamp, and
+// - if we set the chart timezone to "Exchange"
+// then:
+// - all of our timestamps will be relative to the chart-symbol's stock
+//   exchange
+// - all of the pine script dates and times will be identical to those
+//   we see on the chart
+//
+// The only exception to this rule is when we attempt to set a *default*
+// date-time via input.time() where we are unable to use syminfo.timezone.
+// Note that the value returned from input.time() *will* be in the chart-
+// symbol's stock exchange's timezone if you use the rules above... but the
+// *default* date-time will not be able to track timezone changes from one
+// exchange to another.
+
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+TIMEZONE_STK_EX = "GMT-5"   // NYSE timezone
+IN_TIME_DEFAULT = "25 Dec 2012 00:00 " + TIMEZONE_STK_EX // Add a space after the date/time & before timezone
+
+//////////////////////////////////////////////////////////////////////////////
+// FUNCTIONS
+//////////////////////////////////////////////////////////////////////////////
+logTime(int unixTime, string descr="Time") =>
+    sTimeLocal = str.format_time(unixTime, "yyyy-MM-dd HH:mm", syminfo.timezone)
+    sTimeTz    = str.format_time(unixTime, "yyyy-MM-dd HH:mm", TIMEZONE_STK_EX)
+    sTimeUtc   = str.format_time(unixTime, "yyyy-MM-dd HH:mm", "GMT")
+    sTimeWhat  = str.format("{0,date,yyyy-MM-dd HH:mm}", unixTime)  // Appears to be UTC
+    log.info("{0}: Local (Stock Exchange) {1} | TZ ({2}) {3} | UTC {4} | WhatTZ {5}", descr, sTimeLocal, TIMEZONE_STK_EX, sTimeTz, sTimeUtc, sTimeWhat)
+
+//////////////////////////////////////////////////////////////////////////////
+toStkExTimestamp(int yyyy, int mm, int dd) =>
+    // Use the timezone of the chart-symbol's stock exchange
+    timestamp(syminfo.timezone, yyyy, mm, dd)
+
+//////////////////////////////////////////////////////////////////////////////
+getSEDateString(int unixTime) =>
+    // Use the timezone of the chart-symbol's stock exchange
+    str.format_time(unixTime, "yyyy-MM-dd", syminfo.timezone)
+
+//////////////////////////////////////////////////////////////////////////////
+// MAIN
+//////////////////////////////////////////////////////////////////////////////
+// There are 5 overloaded variants of the timestamp() function. The only one
+// we can use within input.time() as the default value is: timestamp(dateString)
+// where dateString is a const string. Hence, we cannot use syminfo.timezone
+// (the chart-symbol's stock exchange) when setting the default value. Instead
+// we can use a timezone which is a const string. Hence unfortunately, the
+// default date-time will not change as we move from one stock exchange to
+// another.
+inDate = input.time(timestamp(IN_TIME_DEFAULT), title="Input Date")
+
+if barstate.islast
+    // Show that input.time() widget is identical to the local/syminfo.timezone version of the time
+    logTime(inDate, "inDate")
+
+    // Show that if you assign the timestamp() with syminfo.timezone, you can extract via 
+    // str.format_time() with syminfo.timezone despite:
+    // - standard time or daylight saving time
+    // - value of UTC or the time in other timezones
+    yyyy = 2010
+    dd   = 15
+    for mm = 1 to 12
+        timeTest  = toStkExTimestamp(yyyy, mm, dd)
+        logTime(timeTest, str.format("timeTest({0,number,0}-{1}-{2})", yyyy, mm, dd))
+
