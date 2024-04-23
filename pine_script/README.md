@@ -177,10 +177,15 @@
        Requests data from a specified symbol from a lower timeframe than the chart's.
      * [request.seed()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.seed) :
        Requests data from a user-maintained GitHub repository and returns it as a series.
-     * [request.earnings()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.earnings) :
-       Requests earnings data for the specified symbol.
+     * [What financial data is available in Pine?](https://www.tradingview.com/support/solutions/43000564727-what-financial-data-is-available-in-pine/)
+       + [request.financial()](https://www.tradingview.com/pine-script-reference/v5/#fun_request{dot}financial) :
+         Requests financial series for symbol.
+       + [request.earnings()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.earnings) :
+         Requests earnings data for the specified symbol.
+       + [request.dividends()](https://www.tradingview.com/pine-script-reference/v5/#fun_request{dot}dividends) :
+         Requests dividends data for the specified symbol.
      * [request.currency_rate()](https://www.tradingview.com/pine-script-reference/v5/#fun_request.currency_rate) :
-       Provides a daily rate that can be used to convert a value expressed in the from currency to another in the to currency.
+       Provides a daily rate that can be used to convert a value expressed in the from-currency to another in the to-currency.
 1. Data structures
    - [TradingView | Arrays](https://www.tradingview.com/pine-script-docs/en/v5/language/Arrays.html)
    - [TradingView | Matrices](https://www.tradingview.com/pine-script-docs/en/v5/language/Matrices.html)
