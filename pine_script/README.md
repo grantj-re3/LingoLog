@@ -161,6 +161,7 @@
    - TradingView | Alerts and runtime error messages
      * [runtime.error()](https://www.tradingview.com/pine-script-reference/v5/#fun_runtime.error) :
        ... causes a runtime error with the error message specified
+       + *BEWARE:* See the gotcha section below
      * [Alerts](https://www.tradingview.com/support/categories/alerts/)
        + [alert()](https://www.tradingview.com/pine-script-reference/v5/#fun_alert) :
          Creates an alert event when called during the real-time bar
@@ -256,6 +257,13 @@ appears they cannot be compared (e.g. with equals '==' or not equals '!=') nor c
 they be cast/converted to a string or a number with str.tostring() or str.tonumber().
 
 I suspect that line, polyline, label and similar object IDs have the same limitation.
+
+
+### Gotcha: runtime.error()
+
+When I used this function (in May 2024) it appeared to invoke the runtime error
+*but did not always display the runtime-error icon on the chart!* Hence it looked like
+my script had frozen for no reason.
 
 
 ### Gotcha: str.format()
