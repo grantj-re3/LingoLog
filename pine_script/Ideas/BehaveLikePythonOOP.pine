@@ -1,0 +1,103 @@
+//@version=5
+// © 2024 GJ
+
+// PURPOSE
+// Attempt to make Pine Script behave like Python OOP for encapsulation &
+// composition (but not inheritance or polymorthism).
+// We need several workarounds, particularly to achieve:
+// - Class vars and methods
+// - Constructors
+// - Methods which do not reference self (i.e. the first arg)
+//
+// Try to implement the following Python tutorial:
+//   Corey Schafer: Python OOP Tutorials - Working with Classes
+//   Tutorials 1, 2 and 3
+//   https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc
+indicator("BehaveLikePythonOOP")
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: class vars
+//////////////////////////////////////////////////////////////////////////////
+type EmployeeClassCls
+    int num_of_emps = 0
+    float raise_amt = 1.04
+
+clsEmployee = EmployeeClassCls.new()    // Workaround: Make a single copy of class vars
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: instance vars
+//////////////////////////////////////////////////////////////////////////////
+type EmployeeClass
+    string first
+    string last
+    string email
+    float  pay
+    EmployeeClassCls cls            // A workaround for getting the class vars into the class
+
+naEmployee = EmployeeClass.new()    // Workaround for the first arg of the constructor (so we can use "method")
+
+// Constructor: We will call it init() instead of new() since Pine Script already uses new()
+method init(EmployeeClass naSelf, string first, string last, float pay) =>
+    naSelf.first := na              // Workaround: We must use the first arg of a method
+
+    // We can do the next 6 lines in a single statement, but the layout below looks similar to the original Python example
+    self = EmployeeClass.new()
+    self.cls   := clsEmployee       // All EmployeeClass objects will point to the *one* instance of the class object
+    self.first := first
+    self.last  := last
+    self.pay   := pay
+    self.email := str.format("{0}.{1}@email.com", first, last)
+    self                            // Return the new object
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: class methods
+//////////////////////////////////////////////////////////////////////////////
+method set_raise_amt(EmployeeClassCls cls, float amount) =>
+    cls.raise_amt := amount
+
+method from_string(EmployeeClassCls cls, string emp_str) =>
+    cls.num_of_emps += 0            // Workaround: We must use the first arg of a method
+    a = str.split(emp_str, '-')
+    naEmployee.init(a.get(0), a.get(1), str.tonumber(a.get(2))) // Return the new object
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: instance methods
+//////////////////////////////////////////////////////////////////////////////
+method fullname(EmployeeClass self) =>
+    str.format("{0} {1}", self.first, self.last)    // Return the string
+
+method apply_raise(EmployeeClass self) =>
+    self.pay := self.pay * self.cls.raise_amt
+
+//////////////////////////////////////////////////////////////////////////////
+// Main
+//////////////////////////////////////////////////////////////////////////////
+if barstate.islast
+    log.info("Attempt to make Pine Script behave like Python OOP for encapsulation & composition (but not inheritance or polymorthism).")
+
+    emp_1 = naEmployee.init('Corey', 'Schafer', 50000)
+    emp_2 = naEmployee.init('Test', 'Employee', 60000)
+
+    log.info(emp_1.email)
+    log.info(emp_1.fullname())
+
+    log.info(emp_2.email)
+    log.info(emp_2.fullname())
+
+    clsEmployee.set_raise_amt(1.05)
+    log.info("{0}", emp_1.pay)
+    emp_1.apply_raise()
+    log.info("{0}", emp_1.pay)
+
+    log.info("{0}", clsEmployee.raise_amt)
+    log.info("{0}", emp_1.cls.raise_amt)
+    log.info("{0}", emp_2.cls.raise_amt)
+
+    emp_str_1 = "John-Doe-70000"
+    emp_str_2 = "Steve-Smith-30000"
+    emp_str_3 = "Jane-Doe-90000"
+
+    new_emp_1 = clsEmployee.from_string(emp_str_1)
+    log.info("{0}", new_emp_1.email)
+    log.info("{0}", new_emp_1.pay)
+ 
