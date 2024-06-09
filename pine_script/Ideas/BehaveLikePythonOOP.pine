@@ -2,12 +2,12 @@
 // © 2024 GJ
 
 // PURPOSE
-// Attempt to make Pine Script behave like Python OOP for encapsulation &
-// composition (but not inheritance or polymorthism).
+// Attempt to make Pine Script behave like Python-OOP for encapsulation
+// (and composition but not inheritance or polymorthism).
 // We need several workarounds, particularly to achieve:
 // - Class vars and methods
 // - Constructors
-// - Methods which do not reference self (i.e. the first arg)
+// - Methods which do not use self (i.e. the first arg)
 //
 // Try to implement the following Python tutorial:
 //   Corey Schafer: Python OOP Tutorials - Working with Classes
@@ -22,10 +22,11 @@ type EmployeeClassCls
     int num_of_emps = 0
     float raise_amt = 1.04
 
-clsEmployee = EmployeeClassCls.new()    // Workaround: Make a single copy of class vars
+// Workaround: We capitalise the first letter to make this object look (a bit) like a class when in use
+EmployeeClass_cls = EmployeeClassCls.new()  // Workaround: Make a *single* copy of class vars
 
 //////////////////////////////////////////////////////////////////////////////
-// EmployeeClass: instance vars
+// EmployeeClass: instance vars & constructor
 //////////////////////////////////////////////////////////////////////////////
 type EmployeeClass
     string first
@@ -34,15 +35,12 @@ type EmployeeClass
     float  pay
     EmployeeClassCls cls            // A workaround for getting the class vars into the class
 
-naEmployee = EmployeeClass.new()    // Workaround for the first arg of the constructor (so we can use "method")
-
-// Constructor: We will call it init() instead of new() since Pine Script already uses new()
-method init(EmployeeClass naSelf, string first, string last, float pay) =>
-    naSelf.first := na              // Workaround: We must use the first arg of a method
-
+// Constructor
+// Workaround: We capitalise the first letter to make this function look (a bit) like a Python constructor when in use
+EmployeeClass_new(string first, string last, float pay) =>
     // We can do the next 6 lines in a single statement, but the layout below looks similar to the original Python example
     self = EmployeeClass.new()
-    self.cls   := clsEmployee       // All EmployeeClass objects will point to the *one* instance of the class object
+    self.cls   := EmployeeClass_cls // All EmployeeClass objects will point to the *one* instance of the class object
     self.first := first
     self.last  := last
     self.pay   := pay
@@ -50,15 +48,20 @@ method init(EmployeeClass naSelf, string first, string last, float pay) =>
     self                            // Return the new object
 
 //////////////////////////////////////////////////////////////////////////////
-// EmployeeClass: class methods
+// EmployeeClass: class/static methods
 //////////////////////////////////////////////////////////////////////////////
+// Similar to a Python @classmethod (because we use cls.something)
 method set_raise_amt(EmployeeClassCls cls, float amount) =>
     cls.raise_amt := amount
 
+// This was implemented as a Python @classmethod because the constructor (returned via the
+// last line) was invoked with cls(...). We can't do that easily in Pine Script below.
+// Similar to a Python @staticmethod (because cls.something isn't wanted, so we are forced
+// to do a workaround below).
 method from_string(EmployeeClassCls cls, string emp_str) =>
     cls.num_of_emps += 0            // Workaround: We must use the first arg of a method
     a = str.split(emp_str, '-')
-    naEmployee.init(a.get(0), a.get(1), str.tonumber(a.get(2))) // Return the new object
+    EmployeeClass_new(a.get(0), a.get(1), str.tonumber(a.get(2))) // Return the new object
 
 //////////////////////////////////////////////////////////////////////////////
 // EmployeeClass: instance methods
@@ -73,10 +76,10 @@ method apply_raise(EmployeeClass self) =>
 // Main
 //////////////////////////////////////////////////////////////////////////////
 if barstate.islast
-    log.info("Attempt to make Pine Script behave like Python OOP for encapsulation & composition (but not inheritance or polymorthism).")
+    log.info("Attempt to make Pine Script behave like Python-OOP for encapsulation (and composition but not inheritance or polymorthism).")
 
-    emp_1 = naEmployee.init('Corey', 'Schafer', 50000)
-    emp_2 = naEmployee.init('Test', 'Employee', 60000)
+    emp_1 = EmployeeClass_new('Corey', 'Schafer', 50000)
+    emp_2 = EmployeeClass_new('Test', 'Employee', 60000)
 
     log.info(emp_1.email)
     log.info(emp_1.fullname())
@@ -84,12 +87,12 @@ if barstate.islast
     log.info(emp_2.email)
     log.info(emp_2.fullname())
 
-    clsEmployee.set_raise_amt(1.05)
+    EmployeeClass_cls.set_raise_amt(1.05)
     log.info("{0}", emp_1.pay)
     emp_1.apply_raise()
     log.info("{0}", emp_1.pay)
 
-    log.info("{0}", clsEmployee.raise_amt)
+    log.info("{0}", EmployeeClass_cls.raise_amt)
     log.info("{0}", emp_1.cls.raise_amt)
     log.info("{0}", emp_2.cls.raise_amt)
 
@@ -97,7 +100,7 @@ if barstate.islast
     emp_str_2 = "Steve-Smith-30000"
     emp_str_3 = "Jane-Doe-90000"
 
-    new_emp_1 = clsEmployee.from_string(emp_str_1)
+    new_emp_1 = EmployeeClass_cls.from_string(emp_str_1)
     log.info("{0}", new_emp_1.email)
     log.info("{0}", new_emp_1.pay)
- 
+
