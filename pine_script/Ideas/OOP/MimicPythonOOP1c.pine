@@ -69,6 +69,7 @@ method init(EmployeeClassCls cls, string first, string last, float pay, Employee
     self.last  := last
     self.pay   := pay
     self.email := str.format("{0}.{1}@email.com", first, last)
+    self._cls.num_of_emps += 1
     if not na(emp_list)
         self.emp_list := emp_list
         self.emp_list.push(self)
@@ -125,6 +126,7 @@ if barstate.islast
     new_emp_2 = EmployeeClass_cls.init(emp_str_2, emp_list)
     new_emp_3 = EmployeeClass_cls.init(emp_str_3, emp_list)
 
+    log.info("{0}", EmployeeClass_cls.num_of_emps)
     for emp in emp_list
         log.info(emp.repr())
 

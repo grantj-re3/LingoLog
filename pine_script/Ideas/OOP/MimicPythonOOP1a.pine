@@ -57,6 +57,7 @@ EmployeeClass_init(string first, string last, float pay) =>
     self.last  := last
     self.pay   := pay
     self.email := str.format("{0}.{1}@email.com", first, last)
+    self._cls.num_of_emps += 1
     self                                // Return the new object
 
 // This was implemented as a Python @classmethod because the constructor (returned via the
@@ -109,4 +110,6 @@ if barstate.islast
     new_emp_1 = EmployeeClass_cls.from_string(emp_str_1)
     log.info("{0}", new_emp_1.email)
     log.info("{0}", new_emp_1.pay)
+
+    log.info("{0}", EmployeeClass_cls.num_of_emps)
 
