@@ -1,0 +1,130 @@
+//@version=5
+// © 2024 GJ
+indicator("MimicPythonOOP1c")
+
+// PURPOSE
+// Attempt to make Pine Script mimic Python-OOP for encapsulation
+// and composition (but not inheritance or polymorthism).
+//
+// Enhancement compared to MimicPythonOOP1b.
+// - Q1: Can we get a class var to count the number of objects created?
+//   A1: Yes. See num_of_emps below.
+// - Q2: Can we get a class var to store every EmployeeClass object created in
+//       an array (by pushing self into the array within the constructor)?
+//   A2: Not with pine script class arrangement below because that would mean:
+//      * EmployeeClassCls contains EmployeeClass[] emp_list, AND
+//      * EmployeeClass contains EmployeeClassCls _cls
+//      but such mutually referencing objects aren't permitted in pine script v5.
+//      There are a few possible workarounds, but the simplest is probably:
+//      * add an EmployeeClass[] array to EmployeeClass (i.e. the type is
+//        then self-referencing)
+//      * use a var to store the EmployeeClass[] array in main (defined after 
+//        EmployeeClass is defined)
+//      * pass the EmployeeClass[] array into every constructor and let the
+//        constructor push self into the array
+//
+// Try to implement the following Python tutorial:
+//   Corey Schafer: Python OOP Tutorials - Working with Classes
+//   Tutorials 1, 2 and 3
+//   https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: class vars (make a single copy)
+//////////////////////////////////////////////////////////////////////////////
+type EmployeeClassCls
+    int num_of_emps = 0
+    float raise_amt = 1.04
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: instance vars, methods
+//////////////////////////////////////////////////////////////////////////////
+type EmployeeClass
+    string first
+    string last
+    string email
+    float  pay
+    EmployeeClassCls _cls               // A workaround to get access to class vars/methods from each instance/object
+    EmployeeClass[] emp_list            // Self referencing type
+
+method fullname(EmployeeClass self) =>
+    str.format("{0} {1}", self.first, self.last)    // Return the string
+
+method apply_raise(EmployeeClass self) =>
+    self.pay := self.pay * self._cls.raise_amt
+
+method repr(EmployeeClass self) =>      // Similar to python __repr__()
+    str.format("Employee(''{0}'', ''{1}'', ''{2}'', {3,number,#})", self.first, self.last, self.email, self.pay) 
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: constructor(s)
+//////////////////////////////////////////////////////////////////////////////
+// Constructor
+// - We will use init() (since new() is already used in pine script)
+// - We invoke these constructors just like a class method
+method init(EmployeeClassCls cls, string first, string last, float pay, EmployeeClass[] emp_list=na) =>
+    // We can do the next 6 lines in a single statement, but the layout below looks similar to the original Python example
+    self = EmployeeClass.new()
+    self._cls  := cls   // All EmployeeClass objects will point to the *one* instance of the class object.
+    self.first := first
+    self.last  := last
+    self.pay   := pay
+    self.email := str.format("{0}.{1}@email.com", first, last)
+    if not na(emp_list)
+        self.emp_list := emp_list
+        self.emp_list.push(self)
+    self                                // Return the new object
+
+// Overloaded constructor
+method init(EmployeeClassCls cls, string emp_str, EmployeeClass[] emp_list=na) =>
+    parts = str.split(emp_str, '-')
+    cls.init(parts.get(0), parts.get(1), str.tonumber(parts.get(2)), emp_list)  // Return the new object
+
+//////////////////////////////////////////////////////////////////////////////
+// EmployeeClass: class/static methods
+//////////////////////////////////////////////////////////////////////////////
+// Similar to a Python @classmethod (because we use cls.something)
+method set_raise_amt(EmployeeClassCls cls, float amount) =>
+    cls.raise_amt := amount
+
+//////////////////////////////////////////////////////////////////////////////
+// Main
+//////////////////////////////////////////////////////////////////////////////
+if barstate.islast
+    log.info("Attempt to make Pine Script mimic Python-OOP for encapsulation and composition (but not inheritance or polymorthism)")
+
+    // Workaround: We capitalise the first letter to make this object look a bit like a class when in use
+    EmployeeClass_cls = EmployeeClassCls.new()  // Workaround: Make a *single* copy of class vars
+    emp_list = array.new<EmployeeClass>(0)      // Similar to a class var. Make a *single* copy
+
+    emp_1 = EmployeeClass_cls.init('Corey', 'Schafer', 50000, emp_list)
+    emp_2 = EmployeeClass_cls.init('Test', 'Employee', 60000, emp_list)
+
+    log.info(emp_1.email)
+    log.info(emp_1.fullname())
+
+    log.info(emp_2.email)
+    log.info(emp_2.fullname())
+
+    EmployeeClass_cls.set_raise_amt(1.05)
+    log.info("{0}", emp_1.pay)
+    emp_1.apply_raise()
+    log.info("{0}", emp_1.pay)
+
+    log.info("{0}", EmployeeClass_cls.raise_amt)
+    // The _cls field is supposed to be private, but we are using it here
+    // to show that each raise_amt field is derived from the *same* object.
+    log.info("{0}", emp_1._cls.raise_amt)
+    log.info("{0}", emp_2._cls.raise_amt)
+
+    emp_str_1 = "John-Doe-70000"
+    emp_str_2 = "Steve-Smith-30000"
+    emp_str_3 = "Jane-Doe-90000"
+
+    // Invoke the overloaded constructor
+    new_emp_1 = EmployeeClass_cls.init(emp_str_1, emp_list)
+    new_emp_2 = EmployeeClass_cls.init(emp_str_2, emp_list)
+    new_emp_3 = EmployeeClass_cls.init(emp_str_3, emp_list)
+
+    for emp in emp_list
+        log.info(emp.repr())
+
