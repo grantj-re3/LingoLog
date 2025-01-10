@@ -28,11 +28,11 @@ $ go get github.com/spf13/pflag
 ```
 
 
-## Build and run separately with:
+## Build and run separately
 
 ```
-$ make build
 $ go build .	# Or 'make build'
+
 $ ./mastermindv2 -h
 $ ./mastermindv2 -r
 $ ./mastermindv2
