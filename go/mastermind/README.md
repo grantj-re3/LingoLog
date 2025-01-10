@@ -7,7 +7,7 @@
 - go version go1.23.3 linux/amd64
 
 
-## Build commands
+## Setup
 
 ```
 $ cd MYPATH/mastermind
