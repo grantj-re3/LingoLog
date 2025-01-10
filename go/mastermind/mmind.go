@@ -224,7 +224,6 @@ func SetupCmdLineFlags() {
 
 // ////////////////////////////////////////////////////////////////////////////
 func VerifyCmdLineOpts() {
-	// Exits or returns true
 	if config.numTokens < 1 {
 		fmt.Printf("Error: num-pos is %d, but must be at least 1\n", config.numTokens)
 		os.Exit(1)
